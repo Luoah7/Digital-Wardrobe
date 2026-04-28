@@ -44,27 +44,25 @@
 
 前端核心数据入口集中在：
 
-- [utils/store.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/utils/store.js)
-- [utils/request.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/utils/request.js)
-- [utils/session.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/utils/session.js)
+- [utils/store.js](utils/store.js)
+- [utils/request.js](utils/request.js)
+- [utils/session.js](utils/session.js)
 
 真实接口契约文档在：
 
-- [docs/api/miniprogram-v1-api.md](/Users/mantou/Documents/trae_projects/Digital Wardrobe/docs/api/miniprogram-v1-api.md)
+- [docs/api/miniprogram-v1-api.md](docs/api/miniprogram-v1-api.md)
 
 ## 运行方式
 
 ### 小程序打开方式
 
-用微信开发者工具导入项目目录：
+用微信开发者工具导入 `Digital Wardrobe` 目录。
 
-`/Users/mantou/Documents/trae_projects/Digital Wardrobe`
-
-当前 [project.config.json](/Users/mantou/Documents/trae_projects/Digital Wardrobe/project.config.json) 已包含一个小程序 `AppID`。如果需要切到你自己的小程序环境，直接替换这里的 `appid` 即可。
+当前 [project.config.json](project.config.json) 已包含一个小程序 `AppID`。如果需要切到你自己的小程序环境，直接替换这里的 `appid` 即可。
 
 ### 前端运行模式
 
-配置文件在 [config/env.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/config/env.js)。
+配置文件在 [config/env.js](config/env.js)。
 
 `useMockApi: true`
 页面走本地 mock 接口，适合继续调界面和交互。
@@ -85,16 +83,14 @@ module.exports = {
 
 ### 本地后端启动
 
-后端目录：
+后端目录是 `server/`。
 
-`/Users/mantou/Documents/trae_projects/Digital Wardrobe/server`
-
-先准备环境变量。可以参考 [server/.env.example](/Users/mantou/Documents/trae_projects/Digital Wardrobe/server/.env.example)，本地私密配置放在 `server/.env.local`，不要提交。
+先准备环境变量。可以参考 [server/.env.example](server/.env.example)，本地配置可放在 `server/.env.local`。
 
 启动方式：
 
 ```bash
-cd /Users/mantou/Documents/trae_projects/Digital Wardrobe/server
+cd server
 export WECHAT_MINI_APP_SECRET=你的小程序AppSecret
 export WECHAT_MINI_APP_ID=你的小程序AppID
 npm start
@@ -153,14 +149,14 @@ npm start
 
 ## 关键文件
 
-- [app.json](/Users/mantou/Documents/trae_projects/Digital Wardrobe/app.json)
-- [config/env.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/config/env.js)
-- [utils/store.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/utils/store.js)
-- [utils/request.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/utils/request.js)
-- [utils/session.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/utils/session.js)
-- [pages/home/index.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/pages/home/index.js)
-- [pages/capture/index.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/pages/capture/index.js)
-- [pages/studio/index.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/pages/studio/index.js)
-- [server/src/server.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/server/src/server.js)
-- [server/src/state.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/server/src/state.js)
-- [server/test/api.test.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/server/test/api.test.js)
+- [app.json](app.json)
+- [config/env.js](config/env.js)
+- [utils/store.js](utils/store.js)
+- [utils/request.js](utils/request.js)
+- [utils/session.js](utils/session.js)
+- [pages/home/index.js](pages/home/index.js)
+- [pages/capture/index.js](pages/capture/index.js)
+- [pages/studio/index.js](pages/studio/index.js)
+- [server/src/server.js](server/src/server.js)
+- [server/src/state.js](server/src/state.js)
+- [server/test/api.test.js](server/test/api.test.js)
