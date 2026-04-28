@@ -58,7 +58,7 @@
 
 用微信开发者工具导入 `Digital Wardrobe` 目录。
 
-当前 [project.config.json](project.config.json) 已包含一个小程序 `AppID`。如果需要切到你自己的小程序环境，直接替换这里的 `appid` 即可。
+默认使用 [project.config.json](project.config.json) 里的 `touristappid`。如果需要切到你自己的小程序环境，直接替换这里的 `appid` 即可。
 
 ### 前端运行模式
 
