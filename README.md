@@ -1,63 +1,78 @@
-# 电子衣橱小程序
+# Digital Wardrobe
 
-这是一个已经切到“接口驱动”结构的原生微信小程序项目。
+电子衣橱微信小程序。目标不是做一个静态展示 Demo，而是把拍照入橱、衣橱管理、日常搭配、穿搭计划和后端联调这几条主链路先跑通，再逐步补齐图片服务、推荐引擎和后台管理能力。
 
-当前已实现：
+当前仓库已经进入接口驱动阶段。前端页面不再直接依赖散落的本地状态，而是统一通过服务层读取聚合数据和提交动作。仓库里同时保留了 mock 模式和真实接口模式，方便继续做界面开发，也方便切到本地后端联调。
 
-- 首页：天气、今日推荐、衣橱额度、快捷入口
-- 拍照入橱：拍照/相册 -> 处理中 -> 结果确认 -> 保存
-- 我的衣橱：搜索、类型/颜色/季节筛选、单品详情
-- 搭配台：按槽位挑选单品并保存搭配
-- 穿搭日历：查看计划并用今日推荐填充日期
-- 我的：城市、天气同步、特权说明、接口运行模式说明
+## 当前版本
 
-## 打开方式
+当前开发分支版本定义为 `V1.1-dev`，更新时间为 `2026-04-28`。
 
-1. 打开微信开发者工具。
-2. 选择“导入项目”。
-3. 项目目录选择：
-   `/Users/mantou/Documents/trae_projects/Digital Wardrobe`
-4. 把 [project.config.json](/Users/mantou/Documents/trae_projects/Digital Wardrobe/project.config.json) 里的 `appid` 从 `touristappid` 改成你自己的小程序 `AppID`。
-5. 导入后直接编译运行。
+这个版本对应的状态是，小程序主流程已经可跑，Node 本地后端骨架已经接入，真实微信登录、用户隔离和 SQLite 持久化已经落地，适合继续做接口联调和下一轮产品细化。
 
-## 当前运行模式
+### 版本分层
 
-项目现在有两种运行模式，配置在 [config/env.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/config/env.js)：
+`V1.0`
+小程序前端主链路跑通，包含首页、拍照入橱、我的衣橱、搭配台、穿搭日历、今日推荐、个人中心。
 
-- `useMockApi: true`
-  走本地 mock 接口，便于你现在继续看流程
-- `useMockApi: false`
-  走真实 HTTP 接口，请同时配置 `apiBaseUrl`
+`V1.1-dev`
+前端切到接口驱动结构，补齐本地后端骨架与 9 个核心接口，支持微信登录、游客态 bootstrap、推荐动作、衣物保存、搭配保存、日历写入、多用户隔离和服务重启后状态保留。
 
-默认保留 `mock`，但页面层已经不再直接依赖本地状态，而是通过接口服务层取数和发起动作。
+### 当前已实现
 
-## 本地后端开发服务
+- 首页天气摘要、今日推荐、衣橱额度和快捷入口
+- 拍照入橱与相册入橱流程，含识别结果确认与保存
+- 衣橱检索、类型筛选、颜色筛选、季节筛选、单品详情
+- 搭配台按槽位选衣并保存搭配
+- 穿搭日历查看计划，并把推荐写入指定日期
+- 我的页面展示城市、天气同步、特权说明、接口运行模式
+- 小程序端统一请求层、会话层、状态入口
+- 本地 Node 后端、SQLite 持久化、真实 `code2session` 登录链路
 
-仓库内已经补了一个最小可跑的 Node 后端骨架，位置在：
+## 产品结构
 
-- [server/package.json](/Users/mantou/Documents/trae_projects/Digital Wardrobe/server/package.json)
-- [server/src/index.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/server/src/index.js)
-- [server/src/server.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/server/src/server.js)
+当前小程序包含 8 个页面：
 
-启动方式：
+- `pages/home` 首页
+- `pages/recommendation` 今日推荐
+- `pages/capture` 拍照入橱
+- `pages/closet` 我的衣橱
+- `pages/garment-detail` 单品详情
+- `pages/studio` 搭配台
+- `pages/calendar` 穿搭日历
+- `pages/profile` 个人中心
 
-1. 进入后端目录
-   `cd /Users/mantou/Documents/trae_projects/Digital Wardrobe/server`
-2. 配置微信登录环境变量
-   `export WECHAT_MINI_APP_SECRET=你的小程序AppSecret`
-   可选：
-   `export WECHAT_MINI_APP_ID=你的小程序AppID`
-   如果不传 `WECHAT_MINI_APP_ID`，后端会默认读取 [project.config.json](/Users/mantou/Documents/trae_projects/Digital Wardrobe/project.config.json) 里的 `appid`
-2. 启动服务
-   `npm start`
-3. 默认监听
-   `http://127.0.0.1:3000`
+前端核心数据入口集中在：
 
-接口契约文档见：
+- [utils/store.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/utils/store.js)
+- [utils/request.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/utils/request.js)
+- [utils/session.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/utils/session.js)
+
+真实接口契约文档在：
 
 - [docs/api/miniprogram-v1-api.md](/Users/mantou/Documents/trae_projects/Digital Wardrobe/docs/api/miniprogram-v1-api.md)
 
-联调前请把 [config/env.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/config/env.js) 改为：
+## 运行方式
+
+### 小程序打开方式
+
+用微信开发者工具导入项目目录：
+
+`/Users/mantou/Documents/trae_projects/Digital Wardrobe`
+
+当前 [project.config.json](/Users/mantou/Documents/trae_projects/Digital Wardrobe/project.config.json) 已包含一个小程序 `AppID`。如果需要切到你自己的小程序环境，直接替换这里的 `appid` 即可。
+
+### 前端运行模式
+
+配置文件在 [config/env.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/config/env.js)。
+
+`useMockApi: true`
+页面走本地 mock 接口，适合继续调界面和交互。
+
+`useMockApi: false`
+页面走真实 HTTP 接口，适合联调本地后端或远端服务。
+
+当前仓库默认配置为真实接口模式：
 
 ```js
 module.exports = {
@@ -68,65 +83,77 @@ module.exports = {
 };
 ```
 
-当前后端特性：
+### 本地后端启动
 
-- 已实现小程序 V1 所需 9 个接口
-- 默认使用 SQLite 持久化，数据库文件路径为 `server/data/app.db`
-- 服务重启后，衣物、搭配、日历计划、推荐索引等状态会保留
-- `POST /v1/auth/wechat/login` 已接入真实微信 `code2session`
-- 后端按 `openid` 隔离用户数据，不再共用全局状态
-- `GET /v1/app/bootstrap` 未登录时返回游客态，登录后返回用户态
-- 已有契约测试覆盖游客态、登录、跨重启持久化和多用户隔离场景
+后端目录：
 
-## 接口层结构
+`/Users/mantou/Documents/trae_projects/Digital Wardrobe/server`
 
-- [utils/session.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/utils/session.js)
-  负责 `wx.login` 和 token 会话
-- [utils/request.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/utils/request.js)
-  负责统一 `wx.request`
-- [utils/store.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/utils/store.js)
-  负责页面调用的统一数据入口和动作方法
-- [services/mock-backend.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/services/mock-backend.js)
-  负责 mock 模式下的本地接口实现
+先准备环境变量。可以参考 [server/.env.example](/Users/mantou/Documents/trae_projects/Digital Wardrobe/server/.env.example)，本地私密配置放在 `server/.env.local`，不要提交。
 
-## 默认真实接口约定
+启动方式：
 
-目前代码默认按下面这套接口约定去请求真实后端：
+```bash
+cd /Users/mantou/Documents/trae_projects/Digital Wardrobe/server
+export WECHAT_MINI_APP_SECRET=你的小程序AppSecret
+export WECHAT_MINI_APP_ID=你的小程序AppID
+npm start
+```
 
-1. `POST /v1/auth/wechat/login`
-   入参：`{ code }`
-   返回：`{ token, user }`
-2. `GET /v1/app/bootstrap`
-   返回整页渲染所需聚合数据：
-   `user / weather / garments / outfits / plans / savedOutfitCount / recommendationIndex / statusMessage`
-3. `POST /v1/garments`
-   新增入橱单品
-4. `POST /v1/recommendations/today/refresh`
-   换一套今日推荐
-5. `POST /v1/recommendations/today/schedule`
-   把当前推荐加入明天计划
-6. `POST /v1/recommendations/today/mark-worn`
-   把当前推荐标记为今天已穿
-7. `POST /v1/plans/{date}/recommendation`
-   把当前推荐写入指定日期
-8. `POST /v1/outfits`
-   保存手动搭配
-9. `POST /v1/garments/{id}/mark-worn`
-   标记单品今天穿过
+默认监听地址：
 
-说明：
+`http://127.0.0.1:3000`
 
-- 如果你的真实后端返回格式是 `{ code: 0, data }` 或 `{ success: true, data }`，当前请求层都能兼容
-- 如果 mutation 接口不直接返回完整 state，前端会自动重新请求 `bootstrap`
+当前后端能力包括：
+
+- 小程序 V1 所需 9 个接口
+- `POST /v1/auth/wechat/login` 真实接入微信 `code2session`
+- `GET /v1/app/bootstrap` 支持游客态和登录态
+- 其余动作接口统一走 Bearer Token
+- 以 `openid` 隔离用户数据
+- 默认使用 SQLite 持久化，数据库文件为 `server/data/app.db`
+- 服务重启后衣物、搭配、计划和推荐状态可保留
 
 ## 当前边界
 
-- 目前只是“小程序真实接口版”，还没把后台管理端一起接进来
-- 天气接口、图片上传、抠图服务、推荐引擎、管理员特权系统都还需要后端配合
-- `mock` 模式仍然可用，目的是保证你现在能继续验证前端流程，不会因为后端没完成就无法开发
+现在这套代码已经适合继续联调，但还不是完整生产版。下面这些能力仍在下一阶段：
+
+- 图片上传和正式素材存储
+- 抠图与衣物识别服务
+- 基于天气、历史穿着和库存的推荐引擎升级
+- 管理员后台和特权系统
+- 更细粒度的衣物编辑、删除和统计分析
+
+## 开发计划
+
+当前建议按三个阶段推进。
+
+### Phase 2
+
+把小程序从可联调版本推进到可持续迭代版本。重点是补齐图片上传、衣物编辑删除、推荐理由结构化、错误处理和接口返回规范，顺手把测试覆盖从契约层扩到核心状态流转。
+
+### Phase 3
+
+把推荐逻辑从演示型推荐升级为规则引擎或轻量智能推荐。这里会引入天气权重、场景偏好、最近穿着间隔、颜色与品类约束，让推荐结果从能用变成更可信。
+
+### Phase 4
+
+补齐后台管理端和运营能力，包括用户特权管理、库存治理、推荐策略配置、日志与观测、素材服务和部署流程。到这一阶段，项目才算从本地产品原型过渡到可交付系统。
+
+## 版本记录
+
+`2026-04-09`
+完成小程序页面骨架与主要交互流。
+
+`2026-04-20`
+完成 V1 后端实现，补齐 9 个核心接口与联调文档。
+
+`2026-04-28`
+整理仓库版本控制、补齐环境示例文件，更新项目文档为当前开发状态。
 
 ## 关键文件
 
+- [app.json](/Users/mantou/Documents/trae_projects/Digital Wardrobe/app.json)
 - [config/env.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/config/env.js)
 - [utils/store.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/utils/store.js)
 - [utils/request.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/utils/request.js)
@@ -134,3 +161,6 @@ module.exports = {
 - [pages/home/index.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/pages/home/index.js)
 - [pages/capture/index.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/pages/capture/index.js)
 - [pages/studio/index.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/pages/studio/index.js)
+- [server/src/server.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/server/src/server.js)
+- [server/src/state.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/server/src/state.js)
+- [server/test/api.test.js](/Users/mantou/Documents/trae_projects/Digital Wardrobe/server/test/api.test.js)
