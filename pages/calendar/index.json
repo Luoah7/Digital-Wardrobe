@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "穿搭日历",
+  "usingComponents": {
+    "bottom-nav": "/components/bottom-nav/index"
+  }
+}

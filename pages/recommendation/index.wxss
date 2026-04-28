@@ -1,0 +1,112 @@
+.main-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  background: linear-gradient(180deg, rgba(255, 251, 246, 0.98) 0%, rgba(245, 237, 230, 0.92) 100%);
+}
+
+.main-weather {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #665b54;
+}
+
+.main-city {
+  display: block;
+  font-size: 30rpx;
+  color: #2c262b;
+  font-weight: 600;
+}
+
+.main-title {
+  font-size: 58rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.main-note {
+  color: #675d57;
+}
+
+.reason-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+}
+
+.reason-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 10rpx 16rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.76);
+  color: #5e534c;
+  font-size: 22rpx;
+}
+
+.piece-list,
+.alt-list,
+.action-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.piece-row,
+.alt-card {
+  display: flex;
+  gap: 18rpx;
+  align-items: center;
+  padding: 20rpx;
+  border-radius: 22rpx;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.piece-image {
+  width: 88rpx;
+  height: 112rpx;
+  border-radius: 18rpx;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.piece-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.piece-name,
+.alt-name {
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.piece-meta {
+  color: var(--muted);
+  font-size: 24rpx;
+}
+
+.alt-card {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.alt-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.mini-alt-stack {
+  display: flex;
+  gap: 10rpx;
+}
+
+.mini-alt-image {
+  width: 64rpx;
+  height: 82rpx;
+  border-radius: 16rpx;
+  background: rgba(255, 255, 255, 0.9);
+}

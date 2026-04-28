@@ -1,0 +1,60 @@
+.auth-card {
+  position: relative;
+  gap: 14rpx;
+}
+
+.auth-card.has-weather {
+  padding-right: 300rpx;
+  padding-bottom: 36rpx;
+}
+
+.auth-button {
+  margin-top: 18rpx;
+}
+
+.profile-logout-button {
+  padding: 0;
+  margin-left: 0;
+}
+
+.auth-weather-pill {
+  position: absolute;
+  top: 24rpx;
+  right: 24rpx;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8rpx;
+  max-width: 272rpx;
+  padding: 12rpx 16rpx;
+  border-radius: 18rpx;
+  background: rgba(255, 251, 246, 0.82);
+  border: 2rpx solid rgba(255, 255, 255, 0.74);
+  box-shadow: 0 10rpx 18rpx rgba(111, 83, 65, 0.06);
+  color: #76665c;
+  font-size: 21rpx;
+  line-height: 1.2;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.auth-updated-at {
+  position: absolute;
+  bottom: 22rpx;
+  right: 24rpx;
+  color: #9a8a80;
+  font-size: 16rpx;
+  line-height: 1;
+  text-align: right;
+}
+
+.profile-logout-icon {
+  width: 32rpx;
+  height: 32rpx;
+  opacity: 0.78;
+}
+
+.reset-button {
+  margin-top: 18rpx;
+}

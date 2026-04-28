@@ -1,0 +1,40 @@
+<view class="app-shell">
+  <view class="page-stack">
+    <view class="page-header">
+      <view class="page-header-copy">
+        <text class="page-overline">calendar plan</text>
+        <text class="page-title">穿搭日历</text>
+        <text class="page-subtitle">先把明天和周末安排掉，早上就不用临时决定。</text>
+      </view>
+      <view class="page-icon-button">🗓</view>
+    </view>
+
+    <view class="card soft" wx:if="{{selectedPlan}}">
+      <text class="page-overline">selected day</text>
+      <text class="section-title">{{selectedPlan.label}} · {{selectedPlan.outfitName}}</text>
+      <text class="section-tip">{{selectedPlan.weather}} · {{selectedPlan.status}}</text>
+    </view>
+
+    <view class="card">
+      <view class="section-header">
+        <text class="section-title">计划列表</text>
+        <text class="section-tip">用今日推荐填充：{{recommendationName}}</text>
+      </view>
+      <view class="plan-list">
+        <block wx:for="{{plans}}" wx:key="date">
+          <view class="plan-card {{selectedDate === item.date ? 'is-active' : ''}}" data-date="{{item.date}}" bindtap="choosePlan">
+            <view>
+              <text class="plan-label">{{item.label}}</text>
+              <text class="plan-name">{{item.outfitName}}</text>
+            </view>
+            <text class="section-tip">{{item.weather}}</text>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <button class="primary-button" bindtap="useRecommendationForSelectedDate">用今日推荐填充当前日期</button>
+  </view>
+
+  <bottom-nav current="calendar" bind:capture="handleCapture"></bottom-nav>
+</view>

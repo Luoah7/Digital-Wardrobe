@@ -1,0 +1,76 @@
+<view class="app-shell">
+  <view class="page-stack">
+    <view class="page-header">
+      <view class="page-header-copy">
+        <text class="page-overline">my garments</text>
+        <text class="page-title">我的衣橱</text>
+        <text class="page-subtitle">按类型、颜色、季节快速筛出现在能穿的单品。</text>
+      </view>
+      <button class="page-icon-button" bindtap="openAlbumCapture">
+        <image class="icon-md" src="{{icons.plus}}" mode="aspectFit"></image>
+      </button>
+    </view>
+
+    <view class="card search-panel">
+      <view class="input-shell">
+        <image class="icon-sm" src="{{icons.search}}" mode="aspectFit"></image>
+        <input value="{{keyword}}" placeholder="搜单品名、颜色或面料" bindinput="updateKeyword" />
+        <image class="icon-sm" src="{{icons.filter}}" mode="aspectFit"></image>
+      </view>
+
+      <view class="filter-stack">
+        <view class="chip-row">
+          <block wx:for="{{typeFilters}}" wx:key="*this">
+            <view class="chip {{activeType === item ? 'active' : ''}}" data-value="{{item}}" bindtap="chooseType">{{item}}</view>
+          </block>
+        </view>
+        <view class="chip-row compact">
+          <block wx:for="{{colorFilters}}" wx:key="*this">
+            <view class="chip {{activeColor === item ? 'active' : ''}}" data-value="{{item}}" bindtap="chooseColor">{{item}}</view>
+          </block>
+        </view>
+        <view class="chip-row compact">
+          <block wx:for="{{seasonFilters}}" wx:key="*this">
+            <view class="chip pale {{activeSeason === item ? 'active' : ''}}" data-value="{{item}}" bindtap="chooseSeason">{{item}}</view>
+          </block>
+        </view>
+      </view>
+    </view>
+
+    <view class="card">
+      <view class="section-header tight">
+        <view>
+          <text class="page-overline">my garments</text>
+          <text class="section-title">{{garments.length}} 件可选单品</text>
+        </view>
+        <button class="text-button" bindtap="openAlbumCapture">从相册补录</button>
+      </view>
+
+      <view class="garment-grid" wx:if="{{garments.length}}">
+        <block wx:for="{{garments}}" wx:key="id">
+          <view class="garment-card" data-id="{{item.id}}" bindtap="openGarmentDetail">
+            <view class="garment-preview" style="background: linear-gradient(140deg, rgba(255,255,255,0.98), {{item.accent}}22);">
+              <image class="garment-preview-image" src="{{item.placeholderImage}}" mode="aspectFit"></image>
+              <view class="garment-dot" style="background: {{item.accent}};"></view>
+              <text class="garment-type">{{item.type}}</text>
+            </view>
+            <view class="garment-copy">
+              <view class="garment-meta">
+                <text>{{item.type}}</text>
+                <text>{{item.color}}</text>
+              </view>
+              <text class="garment-name">{{item.name}}</text>
+              <text class="garment-note">{{item.noteLine}}</text>
+            </view>
+          </view>
+        </block>
+      </view>
+
+      <view class="empty-state" wx:else>
+        <text>{{emptyText}}</text>
+      </view>
+    </view>
+  </view>
+
+  <bottom-nav current="closet" bind:capture="handleCapture"></bottom-nav>
+</view>

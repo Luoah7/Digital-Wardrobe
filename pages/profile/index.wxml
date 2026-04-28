@@ -1,0 +1,60 @@
+<view class="app-shell">
+  <view class="page-stack">
+    <view class="page-header">
+      <view class="page-header-copy">
+        <text class="page-overline">my profile</text>
+        <text class="page-title">我的</text>
+        <text class="page-subtitle">城市、天气同步状态、推荐偏好和权益信息都在这里。</text>
+      </view>
+      <button
+        wx:if="{{!isGuest}}"
+        class="page-icon-button profile-logout-button"
+        bindtap="handleLogout"
+      >
+        <image class="profile-logout-icon" src="{{icons.logout}}" mode="aspectFit"></image>
+      </button>
+    </view>
+
+    <view class="card soft auth-card {{isGuest ? 'is-guest' : 'has-weather'}}">
+      <view wx:if="{{!isGuest}}" class="auth-weather-pill">
+        <image class="icon-xs" src="{{icons.cloudRain}}" mode="aspectFit"></image>
+        <text>{{weatherInline}}</text>
+      </view>
+      <text class="page-overline">account</text>
+      <text class="section-title">{{isGuest ? '当前为游客模式' : ('你好，' + userName)}}</text>
+      <text wx:if="{{isGuest}}" class="section-tip">点击下方微信登录后，即可同步你的衣橱、搭配计划和特权状态。</text>
+      <button
+        wx:if="{{isGuest}}"
+        class="primary-button auth-button"
+        bindtap="handleLogin"
+        loading="{{loginLoading}}"
+      >微信登录</button>
+      <text wx:if="{{!isGuest}}" class="auth-updated-at">{{weatherUpdatedAt}} 更新</text>
+    </view>
+
+    <view class="card soft">
+      <text class="page-overline">privilege status</text>
+      <text class="section-title">{{privilegeSummary}}</text>
+      <text class="section-tip">{{remainingText}}</text>
+      <button class="secondary-button" bindtap="showPrivilegeGuide">查看权益说明</button>
+    </view>
+
+    <view class="card">
+      <text class="page-overline">recommendation rules</text>
+      <text>{{preferenceSummary}}</text>
+    </view>
+
+    <view class="card">
+      <text class="page-overline">api runtime</text>
+      <text class="section-tip">{{apiModeText}}</text>
+    </view>
+
+    <view class="card">
+      <text class="page-overline">local demo</text>
+      <text class="section-tip">mock 模式下可用本地数据快速验证流程；切到真实模式后，这里只保留调试说明，不再直接改动线上数据。</text>
+      <button class="secondary-button reset-button" bindtap="resetDemo">重置本地演示数据</button>
+    </view>
+  </view>
+
+  <bottom-nav current="profile" bind:capture="handleCapture"></bottom-nav>
+</view>

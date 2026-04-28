@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "电子衣橱",
+  "usingComponents": {
+    "bottom-nav": "/components/bottom-nav/index"
+  }
+}

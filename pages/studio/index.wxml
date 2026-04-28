@@ -1,0 +1,82 @@
+<view class="app-shell">
+  <view class="page-stack">
+    <view class="page-header">
+      <view class="page-header-copy">
+        <text class="page-overline">manual outfit lab</text>
+        <text class="page-title">搭配台</text>
+        <text class="page-subtitle">上半屏看整体，下半屏逐个替换单品。</text>
+      </view>
+      <view class="page-icon-button">
+        <image class="icon-md" src="{{icons.studio}}" mode="aspectFit"></image>
+      </view>
+    </view>
+
+    <view class="card mannequin-card">
+      <view class="mannequin-stage">
+        <view class="mannequin-figure">
+          <view class="mannequin-head"></view>
+          <view class="mannequin-body"></view>
+          <view class="mannequin-leg left"></view>
+          <view class="mannequin-leg right"></view>
+        </view>
+        <view class="mannequin-copy">
+          <text class="hero-chip">通勤模式</text>
+          <text class="section-title">当前搭配板</text>
+          <text class="section-tip">选中单品后会实时更新，可直接存成一套常用搭配。</text>
+        </view>
+      </view>
+
+      <view class="selected-piece-list">
+        <block wx:for="{{selectedPieces}}" wx:key="id">
+          <view class="selected-piece-pill">
+            <image class="selected-piece-image" src="{{item.placeholderImage}}" mode="aspectFit"></image>
+            <text>{{item.name}}</text>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <view class="card">
+      <view class="section-header">
+        <text class="section-title">槽位选择</text>
+        <text class="section-tip">已存搭配 {{savedOutfitCount}} 套</text>
+      </view>
+      <view class="slot-grid">
+        <block wx:for="{{slotCards}}" wx:key="id">
+          <view class="slot-card" wx:if="{{!item.hidden}}" data-slot="{{item.id}}" bindtap="chooseSlot">
+            <text class="slot-label">{{item.label}}</text>
+            <view class="slot-body">
+              <image class="slot-image" wx:if="{{item.garment}}" src="{{item.garment.placeholderImage}}" mode="aspectFit"></image>
+              <view class="slot-copy">
+                <text class="slot-name">{{item.name}}</text>
+                <text class="section-tip">{{item.note}}</text>
+              </view>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <view class="card" wx:if="{{candidateGarments.length}}">
+      <view class="section-header">
+        <text class="section-title">当前槽位可选单品</text>
+        <text class="section-tip">点一下替换</text>
+      </view>
+      <view class="candidate-list">
+        <block wx:for="{{candidateGarments}}" wx:key="id">
+          <view class="candidate-card" data-id="{{item.id}}" bindtap="pickGarment">
+            <image class="candidate-image" src="{{item.placeholderImage}}" mode="aspectFit"></image>
+            <view class="candidate-copy">
+              <text class="candidate-name">{{item.name}}</text>
+              <text class="section-tip">{{item.detailLine}}</text>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <button class="primary-button" bindtap="saveOutfit">保存这套搭配</button>
+  </view>
+
+  <bottom-nav current="studio" capture-label="入橱" bind:capture="handleCapture"></bottom-nav>
+</view>

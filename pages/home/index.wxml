@@ -1,0 +1,166 @@
+<view class="app-shell">
+  <view class="page-stack">
+    <view class="top-strip-row">
+      <view class="top-strip">
+        <view class="weather-strip">
+          <view class="weather-strip-side">
+            <image class="icon-xs" src="{{icons.mapPin}}" mode="aspectFit"></image>
+            <text>{{weatherLine}}</text>
+          </view>
+          <view class="weather-strip-side">
+            <image class="icon-xs" src="{{icons.clock}}" mode="aspectFit"></image>
+            <text>07:40 更新</text>
+          </view>
+        </view>
+      </view>
+      <button class="page-icon-button top-weather-button" bindtap="openRecommendation">
+        <image class="icon-md" src="{{icons.cloudRain}}" mode="aspectFit"></image>
+      </button>
+    </view>
+
+    <view class="card hero-card">
+      <view class="hero-copy">
+        <text class="page-overline">today's commute muse</text>
+        <text class="hero-title">今天穿什么</text>
+        <text class="hero-desc">18°-24°，小雨转阴。建议带一件可穿脱外搭，优先避开最近穿过的单品。</text>
+      </view>
+
+      <view class="hero-badges">
+        <block wx:for="{{weatherBadges}}" wx:key="text">
+          <view class="hero-badge">
+            <image class="icon-xs" src="{{item.icon}}" mode="aspectFit"></image>
+            <text>{{item.text}}</text>
+          </view>
+        </block>
+      </view>
+
+      <button class="hero-recommend" bindtap="openRecommendation" wx:if="{{recommendation}}" style="width: 647rpx; display: flex; box-sizing: border-box; left: 0rpx; top: 0rpx">
+        <view class="hero-recommend-copy">
+          <text class="hero-chip">主推荐</text>
+          <text class="hero-recommend-title">{{recommendation.label}}</text>
+          <text class="hero-recommend-desc">{{recommendation.note}}</text>
+        </view>
+
+        <view class="recommend-footer">
+          <view class="recommend-preview">
+            <block wx:for="{{recommendation.pieces}}" wx:key="id">
+              <view class="recommend-piece-card">
+                <image class="recommend-piece-image" src="{{item.placeholderImage}}" mode="aspectFit"></image>
+              </view>
+            </block>
+          </view>
+
+          <view class="recommend-cta">
+            <text>查看整套</text>
+            <image class="icon-xs icon-invert" src="{{icons.arrowRight}}" mode="aspectFit"></image>
+          </view>
+        </view>
+      </button>
+    </view>
+
+    <view class="metric-grid">
+      <view class="card metric-card">
+        <text class="metric-label">衣橱单品</text>
+        <text class="metric-value">{{garmentsCountText}}</text>
+        <text class="metric-note">{{garmentsNote}}</text>
+      </view>
+      <view class="card metric-card">
+        <text class="metric-label">已存搭配</text>
+        <text class="metric-value">{{savedOutfitCount}}</text>
+        <text class="metric-note">通勤组合优先</text>
+      </view>
+      <view class="card metric-card">
+        <text class="metric-label">明日预选</text>
+        <text class="metric-value">{{tomorrowCount}}</text>
+        <text class="metric-note">天气变化会提醒</text>
+      </view>
+    </view>
+
+    <view class="card privilege-card">
+      <view class="privilege-top">
+        <view class="privilege-badge">
+          <image class="icon-sm icon-invert" src="{{icons.home}}" mode="aspectFit"></image>
+        </view>
+        <view>
+          <text class="page-overline privilege-overline">privilege exchange</text>
+          <text class="privilege-title">{{privilegeTitle}}</text>
+        </view>
+      </view>
+      <text class="privilege-body">{{privilegeBody}}</text>
+      <button class="secondary-button privilege-button" bindtap="handleQuickAction" data-key="capture">继续入橱</button>
+    </view>
+
+    <view class="card section-card">
+      <view class="split-heading">
+        <text class="split-overline">QUICK ACTIONS</text>
+        <text class="split-title">不用想，先选一个入口</text>
+      </view>
+      <view class="grid-two">
+        <block wx:for="{{quickActions}}" wx:key="key">
+          <button class="quick-card" data-key="{{item.key}}" bindtap="handleQuickAction" style="width: 310rpx; display: flex; box-sizing: border-box; left: 0rpx; top: 0rpx">
+            <image class="quick-icon" src="{{item.icon}}" mode="aspectFit"></image>
+            <text class="quick-title">{{item.title}}</text>
+            <text class="quick-desc">{{item.desc}}</text>
+          </button>
+        </block>
+      </view>
+    </view>
+
+    <view class="rhythm-block">
+      <view class="section-header rhythm-header">
+        <view>
+          <text class="page-overline">KEEP THE RHYTHM</text>
+          <text class="section-title">最近穿过与明日预选</text>
+        </view>
+      </view>
+
+      <view class="card story-card">
+        <view class="story-tag">
+          <image class="icon-xs" src="{{icons.heart}}" mode="aspectFit"></image>
+          <text>最近穿过避让已开启</text>
+        </view>
+        <text class="story-copy">{{recentStory}}</text>
+      </view>
+    </view>
+
+    <view class="card soft tomorrow-strip" wx:if="{{tomorrowPlan}}">
+      <view class="tomorrow-top">
+        <view class="story-tag compact">
+          <image class="icon-xs" src="{{icons.calendar}}" mode="aspectFit"></image>
+          <text>明天已预留</text>
+        </view>
+        <text class="tomorrow-meta">{{tomorrowPlan.weather}} · {{tomorrowPlan.status}}</text>
+      </view>
+      <text class="tomorrow-title">{{tomorrowPlan.outfitName}}</text>
+    </view>
+
+    <view class="card section-card">
+      <view class="split-heading">
+        <text class="split-overline">SAVED OUTFITS</text>
+        <text class="split-title">你的通勤衣柜里，已经有答案</text>
+      </view>
+      <view class="outfit-list">
+        <block wx:for="{{outfitCards}}" wx:key="id">
+          <view class="outfit-card" bindtap="openRecommendation">
+            <view class="outfit-copy">
+              <text class="outfit-name">{{item.name}}</text>
+              <text class="outfit-tag">{{item.weatherFit}}</text>
+              <text class="outfit-piece-summary">{{item.pieceSummary}}</text>
+            </view>
+
+            <view class="outfit-thumb-row">
+              <block wx:for="{{item.pieces}}" wx:key="id">
+                <view class="outfit-thumb {{index === 1 ? 'is-muted' : ''}} {{index === 2 ? 'is-blue' : ''}}">
+                  <image class="outfit-thumb-image" src="{{item.placeholderImage}}" mode="aspectFit"></image>
+                  <view class="outfit-thumb-dot" style="background: {{item.accent}};"></view>
+                </view>
+              </block>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+
+  <bottom-nav current="home" bind:capture="handleCapture"></bottom-nav>
+</view>

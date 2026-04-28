@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "搭配台",
+  "usingComponents": {
+    "bottom-nav": "/components/bottom-nav/index"
+  }
+}

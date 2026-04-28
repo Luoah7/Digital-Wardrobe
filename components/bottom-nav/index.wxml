@@ -1,0 +1,20 @@
+<view class="nav-shell">
+  <view class="capture-button" bindtap="handleCapture">
+    <image class="capture-icon" src="/assets/ui/camera.svg" mode="aspectFit"></image>
+    <text class="capture-label">{{captureLabel}}</text>
+  </view>
+
+  <view class="nav-bar">
+    <block wx:for="{{items}}" wx:key="id">
+      <view
+        class="nav-item {{current === item.id ? 'is-active' : ''}}"
+        data-id="{{item.id}}"
+        data-path="{{item.path}}"
+        bindtap="handleNavigate"
+      >
+        <image class="nav-item-icon" src="{{item.icon}}" mode="aspectFit"></image>
+        <text class="nav-item-label">{{item.label}}</text>
+      </view>
+    </block>
+  </view>
+</view>

@@ -1,0 +1,152 @@
+.mannequin-card,
+.candidate-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.mannequin-stage {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+}
+
+.mannequin-figure {
+  height: 320rpx;
+  border-radius: 28rpx;
+  background:
+    radial-gradient(circle at 50% 12%, rgba(255,255,255,0.86), rgba(255,255,255,0) 34%),
+    linear-gradient(180deg, rgba(253,248,242,0.9) 0%, rgba(238,228,219,0.85) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.mannequin-head,
+.mannequin-body,
+.mannequin-leg {
+  position: absolute;
+  background: rgba(164, 152, 144, 0.36);
+}
+
+.mannequin-head {
+  width: 54rpx;
+  height: 54rpx;
+  top: 40rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 999rpx;
+}
+
+.mannequin-body {
+  width: 104rpx;
+  height: 132rpx;
+  top: 94rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 32rpx 32rpx 24rpx 24rpx;
+}
+
+.mannequin-leg {
+  width: 34rpx;
+  height: 120rpx;
+  top: 212rpx;
+  border-radius: 18rpx;
+}
+
+.mannequin-leg.left {
+  left: calc(50% - 40rpx);
+}
+
+.mannequin-leg.right {
+  right: calc(50% - 40rpx);
+}
+
+.mannequin-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10rpx;
+}
+
+.selected-piece-list {
+  display: flex;
+  gap: 10rpx;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.selected-piece-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  min-width: 120rpx;
+  padding: 12rpx;
+  border-radius: 18rpx;
+  background: rgba(255, 255, 255, 0.78);
+  font-size: 22rpx;
+}
+
+.selected-piece-image {
+  width: 86rpx;
+  height: 108rpx;
+}
+
+.slot-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.slot-card,
+.candidate-card {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  padding: 20rpx;
+  border-radius: 24rpx;
+  background: rgba(255, 249, 243, 0.96);
+  border: 2rpx solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 16rpx 26rpx rgba(120, 93, 70, 0.08);
+  text-align: left;
+}
+
+.slot-card {
+  justify-content: space-between;
+}
+
+.slot-label {
+  color: var(--muted);
+  font-size: 22rpx;
+  min-width: 120rpx;
+}
+
+.slot-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.slot-image,
+.candidate-image {
+  width: 70rpx;
+  height: 90rpx;
+  border-radius: 18rpx;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.slot-name,
+.candidate-name {
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.slot-copy,
+.candidate-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}

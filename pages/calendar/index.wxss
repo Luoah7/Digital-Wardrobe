@@ -1,0 +1,34 @@
+.plan-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.plan-card {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  padding: 22rpx;
+  border-radius: 24rpx;
+  background: rgba(255, 255, 255, 0.74);
+  text-align: left;
+}
+
+.plan-card.is-active {
+  background: rgba(233, 240, 230, 0.92);
+}
+
+.plan-label {
+  display: block;
+  color: var(--muted);
+  font-size: 22rpx;
+}
+
+.plan-name {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 700;
+}

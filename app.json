@@ -1,0 +1,22 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/closet/index",
+    "pages/studio/index",
+    "pages/calendar/index",
+    "pages/profile/index",
+    "pages/capture/index",
+    "pages/recommendation/index",
+    "pages/garment-detail/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "电子衣橱",
+    "navigationBarBackgroundColor": "#f6f0e8",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#efe5d7",
+    "backgroundTextStyle": "light"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "usingComponents": {}
+}

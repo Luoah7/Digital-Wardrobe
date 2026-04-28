@@ -1,0 +1,48 @@
+.detail-preview {
+  min-height: 320rpx;
+  border-radius: 28rpx;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20rpx;
+  overflow: hidden;
+}
+
+.detail-preview-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.detail-grid,
+.related-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+}
+
+.detail-preview-tag {
+  position: relative;
+  z-index: 1;
+  padding: 10rpx 18rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 250, 244, 0.88);
+}
+
+.detail-row,
+.related-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  padding: 18rpx 20rpx;
+  border-radius: 22rpx;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.related-name {
+  font-size: 28rpx;
+  font-weight: 700;
+}

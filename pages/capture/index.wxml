@@ -1,0 +1,84 @@
+<view class="app-shell">
+  <view class="page-stack">
+    <view class="page-header">
+      <view class="page-header-copy">
+        <text class="page-overline">capture flow</text>
+        <text class="page-title">拍照入橱</text>
+        <text class="page-subtitle">拍照、识别、确认保存，控制在三步内完成。</text>
+      </view>
+      <button class="page-icon-button" bindtap="goBack">
+        <image class="icon-md" src="{{icons.camera}}" mode="aspectFit"></image>
+      </button>
+    </view>
+
+    <view class="card soft" wx:if="{{limitReached}}">
+      <text class="section-title">免费额度已满</text>
+      <text class="section-tip">非特权用户最多可管理 10 件衣物，继续入橱前需要后台管理员开通特权。</text>
+      <button class="secondary-button" bindtap="goBack">先回首页</button>
+    </view>
+
+    <block wx:elif="{{step === 'capture'}}">
+      <view class="card">
+        <view class="section-header">
+          <text class="section-title">选择入橱方式</text>
+          <text class="section-tip">当前剩余 {{remainingSlots}} 个免费名额</text>
+        </view>
+        <view class="capture-choice-list">
+          <view class="capture-choice" data-source="camera" bindtap="chooseSource">
+            <image class="capture-choice-icon" src="{{icons.camera}}" mode="aspectFit"></image>
+            <text class="capture-choice-title">立即拍照</text>
+            <text class="capture-choice-desc">更适合新买入的衣物，识别流程更快。</text>
+          </view>
+          <view class="capture-choice" data-source="album" bindtap="chooseSource">
+            <image class="capture-choice-icon" src="{{icons.album}}" mode="aspectFit"></image>
+            <text class="capture-choice-title">从相册导入</text>
+            <text class="capture-choice-desc">适合补录以前拍过的单品图片。</text>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <block wx:elif="{{step === 'processing'}}">
+      <view class="card processing-card">
+        <text class="page-overline">processing</text>
+        <text class="section-title">正在抠图并识别标签</text>
+        <text class="section-tip">{{source === 'camera' ? '模拟相机图像处理中' : '模拟相册图片处理中'}}</text>
+        <view class="processing-bar">
+          <view class="processing-bar-fill"></view>
+        </view>
+        <button class="primary-button" bindtap="completeProcessing">模拟识别完成</button>
+      </view>
+    </block>
+
+    <block wx:elif="{{draft}}">
+      <view class="card confirm-card">
+        <text class="page-overline">result confirm</text>
+        <text class="section-title">{{draft.name}}</text>
+        <view class="draft-preview" style="background: linear-gradient(140deg, rgba(255,255,255,0.98), {{draft.accent}}22);">
+          <image class="draft-preview-image" src="{{draft.placeholderImage}}" mode="aspectFit"></image>
+          <view class="piece-dot preview-dot" style="background: {{draft.accent}};"></view>
+          <text class="draft-preview-tag">{{draft.type}} · {{draft.color}}</text>
+        </view>
+        <view class="draft-meta">
+          <view class="draft-row">
+            <text>类型</text>
+            <button class="chip active" bindtap="cycleType">{{draft.type}}</button>
+          </view>
+          <view class="draft-row">
+            <text>颜色</text>
+            <button class="chip active" bindtap="cycleColor">{{draft.color}}</button>
+          </view>
+          <view class="draft-row">
+            <text>厚薄度</text>
+            <button class="chip active" bindtap="increaseWarmth">Lv.{{draft.warmthLevel}}</button>
+          </view>
+          <view class="draft-row">
+            <text>季节</text>
+            <text class="section-tip">{{draft.seasonText}}</text>
+          </view>
+        </view>
+        <button class="primary-button" bindtap="saveCapture">保存入橱</button>
+      </view>
+    </block>
+  </view>
+</view>

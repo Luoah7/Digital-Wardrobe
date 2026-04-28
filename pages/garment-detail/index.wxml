@@ -1,0 +1,53 @@
+<view class="app-shell">
+  <view class="page-stack">
+    <view class="page-header">
+      <view class="page-header-copy">
+        <text class="page-overline">garment detail</text>
+        <text class="page-title">{{garment ? garment.name : '单品详情'}}</text>
+        <text class="page-subtitle" wx:if="{{garment}}">{{garment.type}} · {{garment.color}} · {{garment.subType}}</text>
+      </view>
+      <button class="page-icon-button" bindtap="goBack">
+        <image class="icon-md" src="{{icons.closet}}" mode="aspectFit"></image>
+      </button>
+    </view>
+
+    <view class="card" wx:if="{{garment}}">
+      <view class="detail-preview" style="background: linear-gradient(140deg, rgba(255,255,255,0.98), {{garment.accent}}22);">
+        <image class="detail-preview-image" src="{{garment.placeholderImage}}" mode="aspectFit"></image>
+        <view class="piece-dot preview-dot" style="background: {{garment.accent}};"></view>
+        <text class="detail-preview-tag">{{garment.scene}} · {{garment.texture}}</text>
+      </view>
+      <view class="detail-grid">
+        <view class="detail-row">
+          <text>季节</text>
+          <text>{{garment.seasonText}}</text>
+        </view>
+        <view class="detail-row">
+          <text>厚薄度</text>
+          <text>Lv.{{garment.warmthLevel}}</text>
+        </view>
+        <view class="detail-row">
+          <text>最近穿着</text>
+          <text>{{garment.lastWornAt}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="card" wx:if="{{relatedOutfits.length}}">
+      <view class="section-header">
+        <text class="section-title">关联搭配</text>
+      </view>
+      <view class="related-list">
+        <block wx:for="{{relatedOutfits}}" wx:key="id">
+          <view class="related-item">
+            <text class="related-name">{{item.name}}</text>
+            <text class="section-tip">{{item.label}}</text>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <button class="primary-button" bindtap="goStudio">加入当前搭配</button>
+    <button class="secondary-button" bindtap="markTodayWorn">标记今天穿过</button>
+  </view>
+</view>
