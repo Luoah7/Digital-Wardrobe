@@ -8,6 +8,8 @@ const SEASON_FILTERS = ['全部', '春', '夏', '秋', '四季'];
 Page({
   data: {
     icons: UI_ICONS,
+    loading: false,
+    error: '',
     statusMessage: '',
     typeFilters: TYPE_FILTERS,
     colorFilters: COLOR_FILTERS,
@@ -25,20 +27,20 @@ Page({
   },
 
   async refreshPage() {
+    this.setData({ loading: true, error: '' });
     try {
       const state = await getState(true);
       this.stateSnapshot = state;
       this.applyFilters(state);
-    } catch (error) {
-      wx.showToast({
-        title: '衣橱加载失败',
-        icon: 'none',
-      });
+    } catch (e) {
       this.setData({
-        statusMessage: error.message || '衣橱加载失败',
+        error: '衣橱加载失败',
         garments: [],
         emptyText: '当前无法获取衣橱数据，请检查接口配置或网络状态。',
       });
+      wx.showToast({ title: '衣橱加载失败', icon: 'none' });
+    } finally {
+      this.setData({ loading: false });
     }
   },
 

@@ -147,6 +147,13 @@ npm start
 `2026-04-28`
 整理仓库版本控制、补齐环境示例文件，更新项目文档为当前开发状态。
 
+`2026-04-29`
+Phase 2 补齐：图片上传（multipart 解析 + 2MB 压缩 + 孤儿清理）、衣物 CRUD（编辑/删除）、输入校验（类型/季节/温度/必填/长度）、27 个后端测试。
+
+Phase 3 推荐引擎：集成和风天气 API（30 分钟缓存 + fallback）、五维规则引擎（温度/穿着回避/场景/品类/颜色）、bootstrap 和 refresh 接口实时计算推荐。
+
+Phase 4 生产就绪：请求日志 + 安全响应头（X-Content-Type-Options/X-Frame-Options）、session 7 天过期 + 启动清理、健康检查 /v1/health、优雅关闭 SIGTERM/SIGINT、图片流式传输 + ETag 304 缓存、Dockerfile + docker-compose + nginx.conf、环境管理（env.js 三环境切换）、前端 8 页 loading/error/empty 状态、app.json networkTimeout/permission/lazyCodeLoading、34 个后端测试全部通过。
+
 ## 关键文件
 
 - [app.json](app.json)

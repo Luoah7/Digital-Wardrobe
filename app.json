@@ -18,5 +18,21 @@
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json",
-  "usingComponents": {}
+  "lazyCodeLoading": "requiredComponents",
+  "networkTimeout": {
+    "request": 15000,
+    "downloadFile": 15000,
+    "uploadFile": 30000
+  },
+  "permission": {
+    "scope.camera": {
+      "desc": "用于拍照入橱功能"
+    },
+    "scope.writePhotosAlbum": {
+      "desc": "用于保存衣物图片"
+    }
+  },
+  "usingComponents": {
+    "bottom-nav": "/components/bottom-nav/index"
+  }
 }

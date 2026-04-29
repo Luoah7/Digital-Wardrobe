@@ -1,4 +1,5 @@
 const { initializeState } = require('./utils/store');
+const { initNetworkMonitor } = require('./utils/network');
 const env = require('./config/env');
 
 App({
@@ -8,6 +9,7 @@ App({
   },
 
   onLaunch() {
+    initNetworkMonitor();
     initializeState();
   },
 });

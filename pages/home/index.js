@@ -19,6 +19,8 @@ function getOutfitPieces(outfit, garments) {
 Page({
   data: {
     icons: UI_ICONS,
+    loading: false,
+    error: '',
     statusMessage: '',
     weatherLine: '',
     weatherBadges: [],
@@ -40,6 +42,7 @@ Page({
   },
 
   async refreshPage() {
+    this.setData({ loading: true, error: '' });
     try {
       const state = await getState(true);
       const activeRecommendation = getActiveRecommendation(state);
@@ -62,6 +65,7 @@ Page({
           label: activeRecommendation.label,
           note: activeRecommendation.note,
           reason: activeRecommendation.reason,
+          weatherFit: activeRecommendation.weatherFit,
           pieces: decorateGarments(getOutfitPieces(activeRecommendation, state.garments).slice(0, 3)),
         } : null,
         garmentsCountText: state.user.privilege.unlocked
@@ -131,14 +135,11 @@ Page({
           pieceSummary: getOutfitPieces(outfit, state.garments).slice(0, 3).map((piece) => piece.name).join(' · '),
         })),
       });
-    } catch (error) {
-      wx.showToast({
-        title: '首页数据加载失败',
-        icon: 'none',
-      });
-      this.setData({
-        statusMessage: error.message || '首页数据加载失败',
-      });
+    } catch (e) {
+      this.setData({ error: '首页数据加载失败' });
+      wx.showToast({ title: '首页数据加载失败', icon: 'none' });
+    } finally {
+      this.setData({ loading: false });
     }
   },
 
@@ -153,14 +154,14 @@ Page({
       return;
     }
     if (key === 'studio') {
-      wx.redirectTo({ url: '/pages/studio/index' });
+      wx.reLaunch({ url: '/pages/studio/index' });
       return;
     }
     if (key === 'calendar') {
-      wx.redirectTo({ url: '/pages/calendar/index' });
+      wx.reLaunch({ url: '/pages/calendar/index' });
       return;
     }
-    wx.redirectTo({ url: '/pages/closet/index' });
+    wx.reLaunch({ url: '/pages/closet/index' });
   },
 
   handleCapture() {

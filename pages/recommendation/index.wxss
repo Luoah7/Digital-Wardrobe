@@ -46,6 +46,33 @@
   font-size: 22rpx;
 }
 
+.reason-detail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  padding: 16rpx 20rpx;
+  border-radius: 16rpx;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.reason-detail-item {
+  display: flex;
+  gap: 10rpx;
+  align-items: flex-start;
+}
+
+.reason-dot {
+  color: #999;
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.reason-text {
+  font-size: 24rpx;
+  color: #5e534c;
+  line-height: 1.5;
+}
+
 .piece-list,
 .alt-list,
 .action-stack {

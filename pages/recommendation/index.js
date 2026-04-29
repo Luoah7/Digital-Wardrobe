@@ -17,8 +17,11 @@ function getPieces(outfit, garments) {
 Page({
   data: {
     icons: UI_ICONS,
+    loading: false,
+    error: '',
     weatherText: '',
     recommendation: null,
+    reasonDetails: [],
     pieces: [],
     alternatives: [],
   },
@@ -28,6 +31,7 @@ Page({
   },
 
   async refreshPage() {
+    this.setData({ loading: true, error: '' });
     try {
       const state = await getState(true);
       const recommendation = getActiveRecommendation(state);
@@ -36,17 +40,18 @@ Page({
       this.setData({
         weatherText: `${state.weather.city} · ${state.weather.minTemp}°-${state.weather.maxTemp}° · ${state.weather.condition}`,
         recommendation,
+        reasonDetails: (recommendation && recommendation.reasonDetails) || [],
         pieces: recommendation ? decorateGarments(getPieces(recommendation, state.garments)) : [],
         alternatives: alternatives.slice(0, 2).map((item) => ({
           ...item,
           previewPieces: decorateGarments(getPieces(item, state.garments).slice(0, 3)),
         })),
       });
-    } catch (error) {
-      wx.showToast({
-        title: '推荐加载失败',
-        icon: 'none',
-      });
+    } catch (e) {
+      this.setData({ error: '推荐加载失败' });
+      wx.showToast({ title: '推荐加载失败', icon: 'none' });
+    } finally {
+      this.setData({ loading: false });
     }
   },
 
@@ -92,6 +97,6 @@ Page({
       wx.navigateBack();
       return;
     }
-    wx.redirectTo({ url: '/pages/home/index' });
+    wx.reLaunch({ url: '/pages/home/index' });
   },
 });

@@ -34,6 +34,8 @@ function buildDefaultOutfit(state) {
 Page({
   data: {
     icons: UI_ICONS,
+    loading: false,
+    error: '',
     statusMessage: '',
     slotCards: [],
     selectedPieces: [],
@@ -47,6 +49,7 @@ Page({
   },
 
   async refreshPage() {
+    this.setData({ loading: true, error: '' });
     try {
       const state = await getState(true);
       if (!this.currentOutfit) {
@@ -54,11 +57,11 @@ Page({
       }
       this.localStatusMessage = '';
       this.syncPage(state);
-    } catch (error) {
-      wx.showToast({
-        title: '搭配台加载失败',
-        icon: 'none',
-      });
+    } catch (e) {
+      this.setData({ error: '搭配台加载失败' });
+      wx.showToast({ title: '搭配台加载失败', icon: 'none' });
+    } finally {
+      this.setData({ loading: false });
     }
   },
 

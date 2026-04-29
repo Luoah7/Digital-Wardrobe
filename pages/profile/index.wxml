@@ -15,6 +15,18 @@
       </button>
     </view>
 
+    <!-- Loading state -->
+    <view class="card" wx:if="{{loading}}">
+      <text class="section-tip">加载中...</text>
+    </view>
+
+    <!-- Error state -->
+    <view class="card" wx:elif="{{error}}">
+      <text class="section-title">{{error}}</text>
+      <text class="section-tip">请检查网络连接后重试。</text>
+      <button class="secondary-button" bindtap="refreshPage">重试</button>
+    </view>
+
     <view class="card soft auth-card {{isGuest ? 'is-guest' : 'has-weather'}}">
       <view wx:if="{{!isGuest}}" class="auth-weather-pill">
         <image class="icon-xs" src="{{icons.cloudRain}}" mode="aspectFit"></image>

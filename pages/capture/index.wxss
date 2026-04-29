@@ -1,5 +1,4 @@
-.capture-choice-list,
-.draft-meta {
+.capture-choice-list {
   display: flex;
   flex-direction: column;
   gap: 18rpx;
@@ -33,8 +32,7 @@
   font-size: 24rpx;
 }
 
-.processing-card,
-.confirm-card {
+.processing-card {
   display: flex;
   flex-direction: column;
   gap: 18rpx;
@@ -78,20 +76,86 @@
   right: 24rpx;
 }
 
-.draft-preview-tag {
-  position: relative;
-  z-index: 1;
-  padding: 10rpx 18rpx;
-  border-radius: 999rpx;
-  background: rgba(255, 250, 244, 0.88);
+.name-input {
+  padding: 20rpx 24rpx;
+  border-radius: 16rpx;
+  background: rgba(255, 255, 255, 0.72);
+  font-size: 30rpx;
+  color: #3b3a41;
+  min-height: 44rpx;
+  box-sizing: border-box;
 }
 
-.draft-row {
+.option-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+}
+
+.option-chip {
+  padding: 14rpx 28rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.72);
+  font-size: 26rpx;
+  color: #5e534c;
+  border: 2rpx solid transparent;
+}
+
+.option-chip.is-active {
+  background: rgba(127, 148, 123, 0.15);
+  color: #3d5a38;
+  border-color: #7f947b;
+  font-weight: 600;
+}
+
+.color-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+}
+
+.color-chip {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 20rpx;
-  padding: 18rpx 20rpx;
-  border-radius: 22rpx;
+  gap: 10rpx;
+  padding: 12rpx 20rpx;
+  border-radius: 999rpx;
   background: rgba(255, 255, 255, 0.72);
+  font-size: 24rpx;
+  color: #5e534c;
+  border: 2rpx solid transparent;
+}
+
+.color-chip.is-active {
+  background: rgba(127, 148, 123, 0.15);
+  border-color: #7f947b;
+  font-weight: 600;
+}
+
+.color-dot {
+  width: 28rpx;
+  height: 28rpx;
+  border-radius: 50%;
+  border: 2rpx solid rgba(0, 0, 0, 0.08);
+}
+
+.warmth-row {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.warmth-bar {
+  flex: 1;
+  height: 16rpx;
+  border-radius: 999rpx;
+  background: rgba(128, 149, 123, 0.12);
+  overflow: hidden;
+}
+
+.warmth-fill {
+  height: 100%;
+  border-radius: 999rpx;
+  background: linear-gradient(90deg, #c5d4c2 0%, #5f745c 100%);
+  transition: width 0.2s;
 }

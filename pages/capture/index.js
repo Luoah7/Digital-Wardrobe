@@ -1,38 +1,47 @@
+const env = require('../../config/env');
 const {
   createCapturedGarment,
   getRemainingSlots,
   getState,
   isGarmentLimitReached,
 } = require('../../utils/store');
+const { getToken } = require('../../utils/session');
 const { UI_ICONS, decorateGarment } = require('../../utils/presenter');
 
-const CAPTURE_DRAFTS = {
-  camera: {
-    name: '新拍摄的浅燕麦短外套',
-    type: '外套',
-    subType: '短外套',
-    color: '浅燕麦',
-    season: ['春', '秋'],
-    warmthLevel: 2,
-    texture: '软呢',
-    scene: '通勤',
-    accent: '#ccb79f',
-  },
-  album: {
-    name: '相册导入的雾蓝衬衫',
-    type: '上装',
-    subType: '长袖衬衫',
-    color: '雾蓝',
-    season: ['春', '秋'],
-    warmthLevel: 2,
-    texture: '棉感',
-    scene: '通勤',
-    accent: '#9db4cf',
-  },
-};
+const TYPE_OPTIONS = [
+  { value: '外套', label: '外套' },
+  { value: '上装', label: '上装' },
+  { value: '下装', label: '下装' },
+  { value: '连衣裙', label: '连衣裙' },
+  { value: '鞋子', label: '鞋子' },
+  { value: '包', label: '包' },
+];
 
-const TYPE_ORDER = ['外套', '上装', '下装', '连衣裙', '鞋子', '包'];
-const COLOR_ORDER = ['浅燕麦', '雾蓝', '奶油白', '炭灰', '雾粉'];
+const COLOR_OPTIONS = [
+  { value: '浅燕麦', hex: '#ccb79f' },
+  { value: '雾蓝', hex: '#9db4cf' },
+  { value: '奶油白', hex: '#efe3cf' },
+  { value: '炭灰', hex: '#7f7d86' },
+  { value: '墨黑', hex: '#3b3a41' },
+  { value: '雾粉', hex: '#d7afb8' },
+  { value: '奶白', hex: '#ddd1c4' },
+  { value: '黑色', hex: '#29272f' },
+  { value: '燕麦', hex: '#cab69d' },
+];
+
+const SEASON_OPTIONS = ['春', '夏', '秋', '冬'];
+
+const DEFAULT_DRAFT = {
+  name: '新入橱单品',
+  type: '上装',
+  subType: '',
+  color: '浅燕麦',
+  season: ['春', '秋'],
+  warmthLevel: 2,
+  texture: '',
+  scene: '通勤',
+  accent: '#ccb79f',
+};
 
 function withSeasonText(draft) {
   return decorateGarment({
@@ -42,7 +51,16 @@ function withSeasonText(draft) {
   });
 }
 
+function buildSeasonOptions(draft) {
+  if (!draft) return SEASON_OPTIONS.map((s) => ({ value: s, active: false }));
+  return SEASON_OPTIONS.map((s) => ({ value: s, active: draft.season.indexOf(s) >= 0 }));
+}
+
 Page({
+  setDraft(draft) {
+    this.setData({ draft, seasonOptions: buildSeasonOptions(draft) });
+  },
+
   data: {
     icons: UI_ICONS,
     statusMessage: '',
@@ -51,6 +69,10 @@ Page({
     draft: null,
     remainingSlots: 0,
     limitReached: false,
+    uploading: false,
+    typeOptions: TYPE_OPTIONS,
+    colorOptions: COLOR_OPTIONS,
+    seasonOptions: SEASON_OPTIONS.map((s) => ({ value: s, active: false })),
   },
 
   onLoad(options) {
@@ -90,11 +112,34 @@ Page({
         return;
       }
 
-      this.setData({
-        source,
-        step: 'processing',
-        draft: withSeasonText(CAPTURE_DRAFTS[source]),
-        statusMessage: source === 'camera' ? '已拉起拍照流程，正在模拟抠图识别。' : '已读取相册图片，正在模拟抠图识别。',
+      const sourceType = source === 'camera' ? ['camera'] : ['album'];
+
+      wx.chooseImage({
+        count: 1,
+        sourceType,
+        success: (res) => {
+          const tempFilePath = res.tempFilePaths[0];
+          if (!tempFilePath) {
+            wx.showToast({ title: '未获取到图片', icon: 'none' });
+            return;
+          }
+          // Always compress to ensure under 2MB
+          this.compressAndHandle(tempFilePath, source);
+        },
+        fail: (err) => {
+          if (err.errMsg && err.errMsg.indexOf('cancel') !== -1) {
+            return;
+          }
+          if (err.errMsg && err.errMsg.indexOf('80051') !== -1) {
+            wx.showModal({
+              title: '图片太大',
+              content: '微信要求图片不超过 2MB。请在相册中选择一张较小的图片，或用其他 App 压缩后再试。',
+              showCancel: false,
+            });
+            return;
+          }
+          wx.showToast({ title: '图片选取失败', icon: 'none' });
+        },
       });
     } catch (error) {
       wx.showToast({
@@ -104,82 +149,186 @@ Page({
     }
   },
 
-  completeProcessing() {
+  async handleImageSelected(tempFilePath, source) {
+    const draft = withSeasonText({ ...DEFAULT_DRAFT, imageUrl: tempFilePath });
     this.setData({
-      step: 'confirm',
-      statusMessage: '识别完成，请确认衣物类型、颜色和厚薄度后再保存。',
+      source,
+      uploading: true,
+      statusMessage: '正在上传图片...',
+      draft,
+      seasonOptions: buildSeasonOptions(draft),
+    });
+
+    try {
+      const imageUrl = await this.uploadImage(tempFilePath);
+      const savedDraft = withSeasonText({ ...DEFAULT_DRAFT, imageUrl });
+      this.setData({
+        uploading: false,
+        step: 'confirm',
+        draft: savedDraft,
+        seasonOptions: buildSeasonOptions(savedDraft),
+        statusMessage: '上传完成，请选择衣物类型和信息后保存。',
+      });
+    } catch (error) {
+      this.setData({
+        uploading: false,
+        step: 'confirm',
+        statusMessage: '图片上传失败，将保存本地图片。请确认衣物信息。',
+      });
+    }
+  },
+
+  compressAndHandle(tempFilePath, source) {
+    wx.showLoading({ title: '压缩图片中...' });
+    this.doCompress(tempFilePath, 80, (compressedPath) => {
+      wx.hideLoading();
+      wx.getFileInfo({
+        filePath: compressedPath,
+        success: (info) => {
+          const sizeMB = info.size / 1024 / 1024;
+          if (sizeMB > 2) {
+            wx.showModal({
+              title: '图片仍然太大',
+              content: `压缩后仍有 ${sizeMB.toFixed(1)}MB，超过 2MB 限制。建议用手机相机重新拍照（降低分辨率），或用其他 App 手动压缩后再试。`,
+              showCancel: false,
+            });
+            return;
+          }
+          this.handleImageSelected(compressedPath, source);
+        },
+        fail: () => this.handleImageSelected(compressedPath, source),
+      });
     });
   },
 
-  cycleType() {
-    const draft = this.data.draft;
-    if (!draft) {
-      return;
-    }
-    const currentIndex = TYPE_ORDER.indexOf(draft.type);
-    const nextType = TYPE_ORDER[(currentIndex + 1) % TYPE_ORDER.length];
-    this.setData({
-      draft: withSeasonText({
-        ...draft,
-        type: nextType,
-      }),
+  doCompress(src, quality, callback) {
+    wx.compressImage({
+      src,
+      quality,
+      success: (res) => {
+        wx.getFileInfo({
+          filePath: res.tempFilePath,
+          success: (info) => {
+            const sizeKB = info.size / 1024;
+            if (sizeKB > 1900 && quality > 10) {
+              this.doCompress(res.tempFilePath, Math.max(10, quality - 20), callback);
+            } else {
+              callback(res.tempFilePath);
+            }
+          },
+          fail: () => callback(res.tempFilePath),
+        });
+      },
+      fail: () => callback(src),
     });
   },
 
-  cycleColor() {
-    const draft = this.data.draft;
-    if (!draft) {
-      return;
+  uploadImage(tempFilePath) {
+    if (env.useMockApi) {
+      return Promise.resolve(tempFilePath);
     }
-    const currentIndex = COLOR_ORDER.indexOf(draft.color);
-    const nextColor = COLOR_ORDER[(currentIndex + 1) % COLOR_ORDER.length];
-    this.setData({
-      draft: withSeasonText({
-        ...draft,
-        color: nextColor,
-      }),
+
+    return new Promise((resolve, reject) => {
+      const token = getToken();
+      wx.uploadFile({
+        url: `${env.apiBaseUrl}/v1/upload/garment-image`,
+        filePath: tempFilePath,
+        name: 'file',
+        header: {
+          Authorization: token ? `Bearer ${token}` : '',
+        },
+        success: (res) => {
+          if (res.statusCode === 413) {
+            reject(new Error('图片超过 2MB 限制，请压缩后再试'));
+            return;
+          }
+          if (res.statusCode !== 200) {
+            reject(new Error('上传请求失败'));
+            return;
+          }
+          try {
+            const body = JSON.parse(res.data);
+            if (body.code === 0 && body.data && body.data.imageUrl) {
+              resolve(body.data.imageUrl);
+            } else {
+              reject(new Error(body.message || '上传失败'));
+            }
+          } catch (e) {
+            reject(new Error('上传响应解析失败'));
+          }
+        },
+        fail: () => {
+          reject(new Error('网络请求失败'));
+        },
+      });
     });
+  },
+
+  selectType(e) {
+    const type = e.currentTarget.dataset.value;
+    const draft = this.data.draft;
+    if (!draft) return;
+    this.setDraft(withSeasonText({ ...draft, type }));
+  },
+
+  selectColor(e) {
+    const color = e.currentTarget.dataset.value;
+    const hex = e.currentTarget.dataset.hex;
+    const draft = this.data.draft;
+    if (!draft) return;
+    this.setDraft(withSeasonText({ ...draft, color, accent: hex }));
+  },
+
+  toggleSeason(e) {
+    const season = e.currentTarget.dataset.value;
+    const draft = this.data.draft;
+    if (!draft) return;
+    const seasons = draft.season.includes(season)
+      ? draft.season.filter((s) => s !== season)
+      : [...draft.season, season];
+    if (seasons.length === 0) return;
+    this.setDraft(withSeasonText({ ...draft, season: seasons }));
   },
 
   increaseWarmth() {
     const draft = this.data.draft;
-    if (!draft) {
-      return;
-    }
-    this.setData({
-      draft: withSeasonText({
-        ...draft,
-        warmthLevel: draft.warmthLevel >= 4 ? 1 : draft.warmthLevel + 1,
-      }),
-    });
+    if (!draft) return;
+    this.setDraft(withSeasonText({
+      ...draft,
+      warmthLevel: draft.warmthLevel >= 4 ? 1 : draft.warmthLevel + 1,
+    }));
+  },
+
+  onNameInput(e) {
+    const draft = this.data.draft;
+    if (!draft) return;
+    this.setDraft(withSeasonText({ ...draft, name: e.detail.value }));
   },
 
   async saveCapture() {
-    if (!this.data.draft) {
-      return;
-    }
+    if (!this.data.draft) return;
     const state = await getState(true);
     if (isGarmentLimitReached(state)) {
-      this.setData({
-        limitReached: true,
-      });
+      this.setData({ limitReached: true });
       return;
     }
 
     try {
+      const d = this.data.draft;
       await createCapturedGarment({
-        name: this.data.draft.name,
-        type: this.data.draft.type,
-        subType: this.data.draft.subType,
-        color: this.data.draft.color,
-        season: this.data.draft.season,
-        warmthLevel: this.data.draft.warmthLevel,
-        texture: this.data.draft.texture,
-        scene: this.data.draft.scene,
-        accent: this.data.draft.accent,
+        name: d.name,
+        type: d.type,
+        subType: d.subType,
+        color: d.color,
+        season: d.season,
+        warmthLevel: d.warmthLevel,
+        texture: d.texture,
+        scene: d.scene,
+        accent: d.accent,
+        imageUrl: d.imageUrl,
       });
       wx.showToast({ title: '保存成功', icon: 'success' });
-      wx.redirectTo({ url: '/pages/closet/index' });
+      wx.reLaunch({ url: '/pages/closet/index' });
     } catch (error) {
       wx.showToast({
         title: error.message || '保存失败',
@@ -193,6 +342,6 @@ Page({
       wx.navigateBack();
       return;
     }
-    wx.redirectTo({ url: '/pages/home/index' });
+    wx.reLaunch({ url: '/pages/home/index' });
   },
 });

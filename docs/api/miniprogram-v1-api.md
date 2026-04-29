@@ -1,6 +1,6 @@
-# 电子衣橱小程序接口文档（V1）
+# 电子衣橱小程序接口文档（V2）
 
-更新日期：2026-04-20
+更新日期：2026-04-28
 
 ## 1. 文档范围
 
@@ -18,11 +18,12 @@
 | --- | ---: | --- |
 | 鉴权 | 1 | `POST /v1/auth/wechat/login` |
 | 启动聚合 | 1 | `GET /v1/app/bootstrap` |
-| 衣物 | 2 | `POST /v1/garments`、`POST /v1/garments/{id}/mark-worn` |
+| 衣物 | 4 | `POST /v1/garments`、`PUT /v1/garments/{id}`、`DELETE /v1/garments/{id}`、`POST /v1/garments/{id}/mark-worn` |
+| 图片 | 2 | `POST /v1/upload/garment-image`、`GET /v1/images/{filename}` |
 | 推荐 | 3 | `POST /v1/recommendations/today/refresh`、`POST /v1/recommendations/today/schedule`、`POST /v1/recommendations/today/mark-worn` |
 | 日历计划 | 1 | `POST /v1/plans/{date}/recommendation` |
 | 搭配 | 1 | `POST /v1/outfits` |
-| 合计 | 9 | 当前小程序 V1 核心接口总数 |
+| 合计 | 13 | 当前小程序 V2 核心接口总数 |
 
 ## 3. 通用约定
 
@@ -149,14 +150,15 @@
 | `id` | string | 是 | 单品 ID |
 | `name` | string | 是 | 单品名 |
 | `type` | string | 是 | `外套 / 上装 / 下装 / 连衣裙 / 鞋子 / 包` |
-| `subType` | string | 是 | 子类，例如“风衣”“短袖衬衫” |
+| `subType` | string | 是 | 子类，例如”风衣””短袖衬衫” |
 | `color` | string | 是 | 颜色 |
 | `season` | string[] | 是 | 可穿季节 |
-| `warmthLevel` | number | 是 | 厚薄等级，当前前端按 1-4 理解 |
+| `warmthLevel` | number | 是 | 厚薄等级，1-4 整数 |
 | `texture` | string | 是 | 材质 / 面料 |
-| `scene` | string | 是 | 场景，当前主要为“通勤” |
+| `scene` | string | 是 | 场景，当前主要为”通勤” |
 | `lastWornAt` | string | 是 | 最近穿着时间文本 |
 | `accent` | string | 是 | 展示用色值，例如 `#d9c8b4` |
+| `imageUrl` | string | 否 | 衣物照片 URL（V2 新增，上传后获得） |
 
 ### 4.4 Outfit
 
@@ -166,7 +168,8 @@
 | `name` | string | 是 | 搭配名称 |
 | `label` | string | 是 | 概要标签 |
 | `garmentIds` | string[] | 是 | 组成该搭配的衣物 ID |
-| `reason` | string | 是 | 推荐理由 |
+| `reason` | string | 是 | 推荐理由摘要 |
+| `reasonDetails` | string[] | 否 | 推荐理由详细列表（V2 新增） |
 | `weatherFit` | string | 是 | 场景 / 天气适配描述 |
 | `note` | string | 是 | 补充说明 |
 
@@ -201,9 +204,9 @@
 | --- | --- | --- |
 | 首页 `home` | `GET /v1/app/bootstrap` | 无 |
 | 今日推荐 `recommendation` | `GET /v1/app/bootstrap` | `POST /v1/recommendations/today/refresh`、`POST /v1/recommendations/today/schedule`、`POST /v1/recommendations/today/mark-worn` |
-| 拍照入橱 `capture` | `GET /v1/app/bootstrap` | `POST /v1/garments` |
+| 拍照入橱 `capture` | `GET /v1/app/bootstrap` | `POST /v1/upload/garment-image`、`POST /v1/garments` |
 | 我的衣橱 `closet` | `GET /v1/app/bootstrap` | 无 |
-| 单品详情 `garment-detail` | `GET /v1/app/bootstrap` | `POST /v1/garments/{id}/mark-worn` |
+| 单品详情 `garment-detail` | `GET /v1/app/bootstrap` | `PUT /v1/garments/{id}`、`DELETE /v1/garments/{id}`、`POST /v1/garments/{id}/mark-worn` |
 | 搭配台 `studio` | `GET /v1/app/bootstrap` | `POST /v1/outfits` |
 | 穿搭日历 `calendar` | `GET /v1/app/bootstrap` | `POST /v1/plans/{date}/recommendation` |
 | 我的 `profile` | `GET /v1/app/bootstrap` | 无 |
@@ -547,3 +550,123 @@ Authorization: Bearer <token>
 - 登录 + bootstrap 一通，前端所有页面就能先跑起来
 - 推荐相关接口最早影响首页、推荐页、日历页
 - 衣物和搭配相关 mutation 在后面补齐
+
+---
+
+## 9. V2 新增接口
+
+### 9.1 上传衣物图片
+
+`POST /v1/upload/garment-image`
+
+用途：上传衣物照片，返回可访问的图片 URL。
+
+请求格式：`multipart/form-data`，字段名 `file`，支持 jpg/jpeg/png/gif/webp，最大 5MB。
+
+请求头：`Authorization: Bearer <token>`
+
+成功响应：
+
+```json
+{
+  "code": 0,
+  "message": "上传成功",
+  "data": {
+    "imageUrl": "/v1/images/550e8400-e29b-41d4-a716-446655440000.jpg"
+  }
+}
+```
+
+错误响应：
+- `400` 未找到上传文件 / 文件过大 / 请求格式错误
+- `401` 未认证
+
+### 9.2 访问图片
+
+`GET /v1/images/{filename}`
+
+用途：静态图片服务，返回图片二进制数据。
+
+响应头：`Content-Type: image/jpeg|image/png|...`，`Cache-Control: public, max-age=86400`
+
+错误响应：
+- `400` 文件名不合法
+- `404` 图片不存在
+
+### 9.3 编辑衣物
+
+`PUT /v1/garments/{id}`
+
+用途：部分更新衣物字段。
+
+请求头：`Authorization: Bearer <token>`
+
+请求体（均可选，只传需要更新的字段）：
+
+```json
+{
+  "name": "新名称",
+  "type": "上装",
+  "color": "雾蓝",
+  "warmthLevel": 2,
+  "imageUrl": "/v1/images/xxx.jpg"
+}
+```
+
+校验规则（与创建一致）：
+- `type` 必须是 `外套 / 上装 / 下装 / 连衣裙 / 鞋子 / 包`
+- `season` 非空数组，值必须是 `春 / 夏 / 秋 / 冬`
+- `warmthLevel` 1-4 整数
+- `name` 和 `color` 不能为空
+
+成功响应：
+
+```json
+{
+  "code": 0,
+  "message": "更新成功",
+  "data": { "state": { } }
+}
+```
+
+错误响应：
+- `400` 校验失败
+- `401` 未认证
+- `404` 衣物不存在
+
+### 9.4 删除衣物
+
+`DELETE /v1/garments/{id}`
+
+用途：从衣橱中移除衣物，同时清理关联搭配中的引用和已上传的图片文件。
+
+请求头：`Authorization: Bearer <token>`
+
+成功响应：
+
+```json
+{
+  "code": 0,
+  "message": "删除成功",
+  "data": { "state": { } }
+}
+```
+
+错误响应：
+- `401` 未认证
+- `404` 衣物不存在
+
+### 9.5 输入校验规则
+
+V2 对衣物创建和编辑接口增加了服务端校验：
+
+| 字段 | 规则 | 错误提示 |
+| --- | --- | --- |
+| `name` | 非空字符串 | 衣物名称不能为空 |
+| `type` | 枚举：`外套/上装/下装/连衣裙/鞋子/包` | 衣物类型必须是：... |
+| `color` | 非空字符串 | 颜色不能为空 |
+| `season` | 非空数组，值在 `春/夏/秋/冬` 中 | 季节至少选择一个 |
+| `warmthLevel` | 1-4 整数 | 保暖等级必须是 1-4 的整数 |
+| 衣物数量 | 免费用户 ≤ 10 件 | 免费用户最多保存 10 件衣物 |
+
+请求体大小限制：1MB（JSON）/ 5MB（图片上传）

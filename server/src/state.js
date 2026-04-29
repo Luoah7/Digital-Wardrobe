@@ -207,6 +207,14 @@ function createSqliteStateStore(options = {}) {
       return null;
     }
 
+    // Check session expiry (7 days)
+    const lastUsed = new Date(row.last_used_at);
+    const maxAge = 7 * 24 * 60 * 60 * 1000;
+    if (Date.now() - lastUsed.getTime() > maxAge) {
+      db.prepare('DELETE FROM sessions WHERE token = ?').run(token);
+      return null;
+    }
+
     touchSessionStmt.run(nowIso(), token);
     return {
       token: row.token,
@@ -216,6 +224,12 @@ function createSqliteStateStore(options = {}) {
       unionid: row.unionid,
       state: hydrateUserState(row.user_id, row.name, row.state_json),
     };
+  }
+
+  // Clean expired sessions on startup
+  const expiredCount = db.prepare("DELETE FROM sessions WHERE last_used_at < datetime('now', '-7 days')").run();
+  if (expiredCount.changes > 0) {
+    console.log(`[startup] cleaned ${expiredCount.changes} expired session(s)`);
   }
 
   return {
@@ -301,6 +315,7 @@ function createSqliteStateStore(options = {}) {
         texture: payload.texture,
         scene: payload.scene,
         accent: payload.accent,
+        imageUrl: payload.imageUrl || '',
         lastWornAt: '刚刚入橱',
       };
 
@@ -395,12 +410,14 @@ function createSqliteStateStore(options = {}) {
 
       if (garmentIds.length) {
         const pieces = garmentIds.map((id) => garmentMap[id]).filter(Boolean);
+        const reasonDetails = pieces.map((piece) => `选择了${piece.color}${piece.subType || piece.type}`);
         session.state.outfits.unshift({
           id: nextId('o', session.state.outfits),
           name: `我的搭配 ${session.state.savedOutfitCount + 1}`,
           label: pieces.map((piece) => piece.type).join(' + '),
           garmentIds,
           reason: '由用户在搭配台手动保存。',
+          reasonDetails,
           weatherFit: '自定义搭配',
           note: '这是一套刚保存的手动搭配。',
         });
@@ -425,6 +442,60 @@ function createSqliteStateStore(options = {}) {
 
       session.state.statusMessage = '已标记该单品今天穿过，后续推荐会尽量绕开它。';
       return persistUserState(session.userId, session.state);
+    },
+
+    updateGarment(token, garmentId, updates) {
+      const session = resolveSession(token);
+      if (!session) {
+        return null;
+      }
+
+      const index = session.state.garments.findIndex((g) => g.id === garmentId);
+      if (index === -1) {
+        return { notFound: true };
+      }
+
+      const allowedFields = ['name', 'type', 'subType', 'color', 'season', 'warmthLevel', 'texture', 'scene', 'accent', 'imageUrl'];
+      const current = session.state.garments[index];
+      const patched = { ...current };
+      for (const key of allowedFields) {
+        if (updates[key] !== undefined) {
+          patched[key] = updates[key];
+        }
+      }
+      session.state.garments[index] = patched;
+      session.state.statusMessage = `已更新「${patched.name}」的信息。`;
+      return persistUserState(session.userId, session.state);
+    },
+
+    deleteGarment(token, garmentId) {
+      const session = resolveSession(token);
+      if (!session) {
+        return null;
+      }
+
+      const index = session.state.garments.findIndex((g) => g.id === garmentId);
+      if (index === -1) {
+        return { notFound: true };
+      }
+
+      const deleted = session.state.garments[index];
+      session.state.garments.splice(index, 1);
+
+      // Remove garment references from outfits
+      session.state.outfits = session.state.outfits
+        .map((outfit) => ({
+          ...outfit,
+          garmentIds: outfit.garmentIds.filter((id) => id !== garmentId),
+        }))
+        .filter((outfit) => outfit.garmentIds.length > 0);
+
+      session.state.statusMessage = `已把「${deleted.name}」从衣橱中移除。`;
+      return { state: persistUserState(session.userId, session.state), deleted };
+    },
+
+    getDb() {
+      return db;
     },
 
     close() {

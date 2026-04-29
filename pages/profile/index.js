@@ -11,6 +11,8 @@ const {
 Page({
   data: {
     icons: require('../../utils/presenter').UI_ICONS,
+    loading: false,
+    error: '',
     statusMessage: '',
     isGuest: false,
     userName: '',
@@ -28,6 +30,7 @@ Page({
   },
 
   async refreshPage() {
+    this.setData({ loading: true, error: '' });
     try {
       const state = await getState(true);
       const remainingSlots = getRemainingSlots(state);
@@ -52,11 +55,11 @@ Page({
             ? '当前免费额度已用完，请联系管理员开通特权。'
             : `当前还可以继续添加${remainingSlots}件衣物。`,
       });
-    } catch (error) {
-      wx.showToast({
-        title: '个人页加载失败',
-        icon: 'none',
-      });
+    } catch (e) {
+      this.setData({ error: '个人页加载失败' });
+      wx.showToast({ title: '个人页加载失败', icon: 'none' });
+    } finally {
+      this.setData({ loading: false });
     }
   },
 

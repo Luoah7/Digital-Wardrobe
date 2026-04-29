@@ -11,6 +11,18 @@
       </button>
     </view>
 
+    <!-- Loading state -->
+    <view class="card" wx:if="{{loading}}">
+      <text class="section-tip">加载中...</text>
+    </view>
+
+    <!-- Error state -->
+    <view class="card" wx:elif="{{error}}">
+      <text class="section-title">{{error}}</text>
+      <text class="section-tip">请检查网络连接后重试。</text>
+      <button class="secondary-button" bindtap="refreshPage">重试</button>
+    </view>
+
     <view class="card search-panel">
       <view class="input-shell">
         <image class="icon-sm" src="{{icons.search}}" mode="aspectFit"></image>
@@ -50,7 +62,7 @@
         <block wx:for="{{garments}}" wx:key="id">
           <view class="garment-card" data-id="{{item.id}}" bindtap="openGarmentDetail">
             <view class="garment-preview" style="background: linear-gradient(140deg, rgba(255,255,255,0.98), {{item.accent}}22);">
-              <image class="garment-preview-image" src="{{item.placeholderImage}}" mode="aspectFit"></image>
+              <image class="garment-preview-image" src="{{item.displayImage}}" mode="aspectFit"></image>
               <view class="garment-dot" style="background: {{item.accent}};"></view>
               <text class="garment-type">{{item.type}}</text>
             </view>

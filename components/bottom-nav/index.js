@@ -26,7 +26,7 @@ Component({
       if (id === this.properties.current) {
         return;
       }
-      wx.redirectTo({ url: path });
+      wx.reLaunch({ url: path });
     },
 
     handleCapture() {

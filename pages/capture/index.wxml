@@ -4,7 +4,7 @@
       <view class="page-header-copy">
         <text class="page-overline">capture flow</text>
         <text class="page-title">拍照入橱</text>
-        <text class="page-subtitle">拍照、识别、确认保存，控制在三步内完成。</text>
+        <text class="page-subtitle">拍照或选图，确认信息后保存入橱。</text>
       </view>
       <button class="page-icon-button" bindtap="goBack">
         <image class="icon-md" src="{{icons.camera}}" mode="aspectFit"></image>
@@ -38,47 +38,96 @@
       </view>
     </block>
 
-    <block wx:elif="{{step === 'processing'}}">
+    <block wx:elif="{{uploading}}">
       <view class="card processing-card">
-        <text class="page-overline">processing</text>
-        <text class="section-title">正在抠图并识别标签</text>
-        <text class="section-tip">{{source === 'camera' ? '模拟相机图像处理中' : '模拟相册图片处理中'}}</text>
+        <text class="section-title">正在上传图片...</text>
+        <view class="draft-preview" wx:if="{{draft && draft.imageUrl}}">
+          <image class="draft-preview-image" src="{{draft.imageUrl}}" mode="aspectFit"></image>
+        </view>
         <view class="processing-bar">
           <view class="processing-bar-fill"></view>
         </view>
-        <button class="primary-button" bindtap="completeProcessing">模拟识别完成</button>
       </view>
     </block>
 
-    <block wx:elif="{{draft}}">
-      <view class="card confirm-card">
-        <text class="page-overline">result confirm</text>
-        <text class="section-title">{{draft.name}}</text>
+    <block wx:elif="{{step === 'confirm' && draft}}">
+      <!-- Image preview -->
+      <view class="card">
         <view class="draft-preview" style="background: linear-gradient(140deg, rgba(255,255,255,0.98), {{draft.accent}}22);">
-          <image class="draft-preview-image" src="{{draft.placeholderImage}}" mode="aspectFit"></image>
+          <image class="draft-preview-image" src="{{draft.displayImage || draft.imageUrl}}" mode="aspectFit"></image>
           <view class="piece-dot preview-dot" style="background: {{draft.accent}};"></view>
-          <text class="draft-preview-tag">{{draft.type}} · {{draft.color}}</text>
         </view>
-        <view class="draft-meta">
-          <view class="draft-row">
-            <text>类型</text>
-            <button class="chip active" bindtap="cycleType">{{draft.type}}</button>
-          </view>
-          <view class="draft-row">
-            <text>颜色</text>
-            <button class="chip active" bindtap="cycleColor">{{draft.color}}</button>
-          </view>
-          <view class="draft-row">
-            <text>厚薄度</text>
-            <button class="chip active" bindtap="increaseWarmth">Lv.{{draft.warmthLevel}}</button>
-          </view>
-          <view class="draft-row">
-            <text>季节</text>
-            <text class="section-tip">{{draft.seasonText}}</text>
-          </view>
-        </view>
-        <button class="primary-button" bindtap="saveCapture">保存入橱</button>
       </view>
+
+      <!-- Name -->
+      <view class="card">
+        <view class="section-header">
+          <text class="section-title">衣物名称</text>
+        </view>
+        <input class="name-input" value="{{draft.name}}" bindinput="onNameInput" placeholder="给这件衣服起个名字" />
+      </view>
+
+      <!-- Type selector -->
+      <view class="card">
+        <view class="section-header">
+          <text class="section-title">衣物类型</text>
+          <text class="section-tip">选择最匹配的分类</text>
+        </view>
+        <view class="option-grid">
+          <block wx:for="{{typeOptions}}" wx:key="value">
+            <view class="option-chip {{draft.type === item.value ? 'is-active' : ''}}" data-value="{{item.value}}" bindtap="selectType">
+              <text>{{item.label}}</text>
+            </view>
+          </block>
+        </view>
+      </view>
+
+      <!-- Color selector -->
+      <view class="card">
+        <view class="section-header">
+          <text class="section-title">颜色</text>
+        </view>
+        <view class="color-grid">
+          <block wx:for="{{colorOptions}}" wx:key="value">
+            <view class="color-chip {{draft.color === item.value ? 'is-active' : ''}}" data-value="{{item.value}}" data-hex="{{item.hex}}" bindtap="selectColor">
+              <view class="color-dot" style="background: {{item.hex}};"></view>
+              <text>{{item.value}}</text>
+            </view>
+          </block>
+        </view>
+      </view>
+
+      <!-- Season selector -->
+      <view class="card">
+        <view class="section-header">
+          <text class="section-title">可穿季节</text>
+          <text class="section-tip">可多选</text>
+        </view>
+        <view class="option-grid">
+          <block wx:for="{{seasonOptions}}" wx:key="value">
+            <view class="option-chip {{item.active ? 'is-active' : ''}}" data-value="{{item.value}}" bindtap="toggleSeason">
+              <text>{{item.value}}</text>
+            </view>
+          </block>
+        </view>
+      </view>
+
+      <!-- Warmth level -->
+      <view class="card">
+        <view class="section-header">
+          <text class="section-title">厚薄度</text>
+        </view>
+        <view class="warmth-row">
+          <view class="warmth-bar">
+            <view class="warmth-fill" style="width: {{draft.warmthLevel * 25}}%;"></view>
+          </view>
+          <button class="chip active" bindtap="increaseWarmth">Lv.{{draft.warmthLevel}}</button>
+        </view>
+        <text class="section-tip">1=薄 → 4=厚，点击按钮切换</text>
+      </view>
+
+      <!-- Save -->
+      <button class="primary-button" bindtap="saveCapture">保存入橱</button>
     </block>
   </view>
 </view>

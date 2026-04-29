@@ -11,7 +11,19 @@
       </button>
     </view>
 
-    <view class="card main-card" wx:if="{{recommendation}}">
+    <!-- Loading state -->
+    <view class="card" wx:if="{{loading}}">
+      <text class="section-tip">加载中...</text>
+    </view>
+
+    <!-- Error state -->
+    <view class="card" wx:elif="{{error}}">
+      <text class="section-title">{{error}}</text>
+      <text class="section-tip">请检查网络连接后重试。</text>
+      <button class="secondary-button" bindtap="refreshPage">重试</button>
+    </view>
+
+    <view class="card main-card" wx:elif="{{recommendation}}">
       <view class="main-weather">
         <view>
           <text class="main-city">{{weatherText}}</text>
@@ -21,6 +33,14 @@
       </view>
       <text class="main-title">{{recommendation.label}}</text>
       <text class="main-note">{{recommendation.reason}}</text>
+      <view class="reason-detail-list" wx:if="{{reasonDetails.length}}">
+        <block wx:for="{{reasonDetails}}" wx:key="index">
+          <view class="reason-detail-item">
+            <text class="reason-dot">-</text>
+            <text class="reason-text">{{item}}</text>
+          </view>
+        </block>
+      </view>
       <view class="reason-badges">
         <view class="reason-badge">
           <image class="icon-xs" src="{{icons.heart}}" mode="aspectFit"></image>
@@ -28,7 +48,7 @@
         </view>
         <view class="reason-badge">
           <image class="icon-xs" src="{{icons.umbrella}}" mode="aspectFit"></image>
-          <text>兼顾轻雨</text>
+          <text>兼顾天气</text>
         </view>
       </view>
     </view>
@@ -40,7 +60,7 @@
       <view class="piece-list">
         <block wx:for="{{pieces}}" wx:key="id">
           <view class="piece-row">
-            <image class="piece-image" src="{{item.placeholderImage}}" mode="aspectFit"></image>
+            <image class="piece-image" src="{{item.displayImage}}" mode="aspectFit"></image>
             <view class="piece-copy">
               <text class="piece-name">{{item.name}}</text>
               <text class="piece-meta">{{item.detailLine}}</text>
@@ -68,7 +88,7 @@
             </view>
             <view class="mini-alt-stack">
               <block wx:for="{{item.previewPieces}}" wx:key="id">
-                <image class="mini-alt-image" src="{{item.placeholderImage}}" mode="aspectFit"></image>
+                <image class="mini-alt-image" src="{{item.displayImage}}" mode="aspectFit"></image>
               </block>
             </view>
           </view>

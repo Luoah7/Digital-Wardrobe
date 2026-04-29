@@ -9,6 +9,18 @@
       <view class="page-icon-button">🗓</view>
     </view>
 
+    <!-- Loading state -->
+    <view class="card" wx:if="{{loading}}">
+      <text class="section-tip">加载中...</text>
+    </view>
+
+    <!-- Error state -->
+    <view class="card" wx:elif="{{error}}">
+      <text class="section-title">{{error}}</text>
+      <text class="section-tip">请检查网络连接后重试。</text>
+      <button class="secondary-button" bindtap="refreshPage">重试</button>
+    </view>
+
     <view class="card soft" wx:if="{{selectedPlan}}">
       <text class="page-overline">selected day</text>
       <text class="section-title">{{selectedPlan.label}} · {{selectedPlan.outfitName}}</text>

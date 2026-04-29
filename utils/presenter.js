@@ -1,3 +1,5 @@
+const env = require('../config/env');
+
 const GARMENT_PLACEHOLDERS = {
   外套: '/assets/garments/coat.svg',
   上装: '/assets/garments/top.svg',
@@ -33,9 +35,16 @@ function decorateGarment(garment) {
     return null;
   }
 
+  const placeholderImage = GARMENT_PLACEHOLDERS[garment.type] || GARMENT_PLACEHOLDERS['上装'];
+  let displayImage = garment.imageUrl || placeholderImage;
+  if (displayImage.startsWith('/v1/')) {
+    displayImage = env.apiBaseUrl + displayImage;
+  }
+
   return {
     ...garment,
-    placeholderImage: GARMENT_PLACEHOLDERS[garment.type] || GARMENT_PLACEHOLDERS['上装'],
+    placeholderImage,
+    displayImage,
     seasonText: Array.isArray(garment.season) ? garment.season.join(' / ') : '',
     detailLine: `${garment.type} · ${garment.color} · ${garment.subType}`,
     noteLine: `${garment.texture} · 最近穿着 ${garment.lastWornAt}`,

@@ -150,6 +150,12 @@ function createDefaultState() {
         label: '薄外套 + 深色内搭 + 长裤',
         garmentIds: ['g-001', 'g-004', 'g-006', 'g-007', 'g-008'],
         reason: '今天 18°-24° 且早晚有风，适合带一件可穿脱的针织外搭。',
+        reasonDetails: [
+          '今日气温 18°-24°C，早晚温差大，薄针织开衫方便穿脱',
+          '米白开衫已有 22 天未穿，色彩清爽适合春日通勤',
+          '墨黑内搭与炭灰西裤形成深浅对比，视觉层次分明',
+          '今日有风，针织面料比衬衫更能挡风保暖',
+        ],
         weatherFit: '温差日 · 通勤',
         note: '这套会优先避开今天已经穿过的奶油白衬衫。',
       },
@@ -159,6 +165,12 @@ function createDefaultState() {
         label: '风衣 + 浅色内搭 + 长裤',
         garmentIds: ['g-002', 'g-003', 'g-006', 'g-007', 'g-008'],
         reason: '今天有轻微降雨，外层用挺括风衣更适合通勤途中应对小雨和风。',
+        reasonDetails: [
+          '天气预报显示今日有小雨，风衣面料具备一定防水性',
+          '炭灰廓形风衣已 25 天未穿，适合今天的雨天场景',
+          '奶油白内搭提亮整体色调，避免雨天穿搭过于沉闷',
+          '通勤日选择经典风衣造型，正式感与实用性兼顾',
+        ],
         weatherFit: '小雨通勤',
         note: '上装更轻，适合会议日或稍正式的工作安排。',
       },
@@ -168,6 +180,12 @@ function createDefaultState() {
         label: '针织开衫 + 真丝衬衫 + 西裤',
         garmentIds: ['g-001', 'g-005', 'g-006', 'g-007', 'g-008'],
         reason: '如果今天节奏更平稳，可以用真丝衬衫做更柔和的通勤方案。',
+        reasonDetails: [
+          '今日无雨无大风，真丝衬衫的轻薄质感刚好合适',
+          '雾粉色调搭配米白开衫，整体柔和不抢眼',
+          '雾粉衬衫已 20 天未穿，轮换穿着有利于衣物保养',
+          '适合会议较少、节奏平稳的工作日',
+        ],
         weatherFit: '通勤会议日',
         note: '色彩更柔和，适合需要气质感的工作场景。',
       },
@@ -254,12 +272,49 @@ async function createGarment(payload) {
     color: payload.color,
     season: payload.season,
     warmthLevel: payload.warmthLevel,
+    imageUrl: payload.imageUrl || '',
     texture: payload.texture,
     scene: payload.scene,
     accent: payload.accent,
     lastWornAt: '刚刚入橱',
   });
   state.statusMessage = `已把「${payload.name}」加入电子衣橱，识别结果可继续微调。`;
+  writeState(state);
+  return delay(state);
+}
+
+async function updateGarment(garmentId, updates) {
+  const state = readState();
+  const index = state.garments.findIndex((g) => g.id === garmentId);
+  if (index === -1) {
+    throw new Error('衣物不存在');
+  }
+  const allowedFields = ['name', 'type', 'subType', 'color', 'season', 'warmthLevel', 'texture', 'scene', 'accent', 'imageUrl'];
+  const current = state.garments[index];
+  for (const key of allowedFields) {
+    if (updates[key] !== undefined) {
+      current[key] = updates[key];
+    }
+  }
+  state.statusMessage = `已更新「${current.name}」的信息。`;
+  writeState(state);
+  return delay(state);
+}
+
+async function deleteGarment(garmentId) {
+  const state = readState();
+  const index = state.garments.findIndex((g) => g.id === garmentId);
+  if (index === -1) {
+    throw new Error('衣物不存在');
+  }
+  const deleted = state.garments.splice(index, 1)[0];
+  state.outfits = state.outfits
+    .map((outfit) => ({
+      ...outfit,
+      garmentIds: outfit.garmentIds.filter((id) => id !== garmentId),
+    }))
+    .filter((outfit) => outfit.garmentIds.length > 0);
+  state.statusMessage = `已把「${deleted.name}」从衣橱中移除。`;
   writeState(state);
   return delay(state);
 }
@@ -393,6 +448,7 @@ module.exports = {
   bootstrapApp,
   createDefaultState,
   createGarment,
+  deleteGarment,
   initializeMockState,
   login,
   markGarmentWorn,
@@ -400,6 +456,7 @@ module.exports = {
   resetState,
   rotateRecommendation,
   saveOutfitBoard,
+  updateGarment,
   assignRecommendationToDate,
   assignRecommendationToTomorrow,
 };

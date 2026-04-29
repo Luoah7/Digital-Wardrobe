@@ -12,6 +12,8 @@ function decoratePlans(state) {
 
 Page({
   data: {
+    loading: false,
+    error: '',
     statusMessage: '',
     plans: [],
     selectedDate: '',
@@ -24,15 +26,16 @@ Page({
   },
 
   async refreshPage(forceDate) {
+    this.setData({ loading: true, error: '' });
     try {
       const state = await getState(true);
       const selectedDate = forceDate || this.data.selectedDate || ((state.plans.find((plan) => plan.label === '明天') || {}).date || state.plans[0].date);
       this.syncPage(state, selectedDate);
-    } catch (error) {
-      wx.showToast({
-        title: '日历加载失败',
-        icon: 'none',
-      });
+    } catch (e) {
+      this.setData({ error: '日历加载失败' });
+      wx.showToast({ title: '日历加载失败', icon: 'none' });
+    } finally {
+      this.setData({ loading: false });
     }
   },
 

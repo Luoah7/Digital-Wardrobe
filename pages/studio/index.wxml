@@ -11,6 +11,18 @@
       </view>
     </view>
 
+    <!-- Loading state -->
+    <view class="card" wx:if="{{loading}}">
+      <text class="section-tip">加载中...</text>
+    </view>
+
+    <!-- Error state -->
+    <view class="card" wx:elif="{{error}}">
+      <text class="section-title">{{error}}</text>
+      <text class="section-tip">请检查网络连接后重试。</text>
+      <button class="secondary-button" bindtap="refreshPage">重试</button>
+    </view>
+
     <view class="card mannequin-card">
       <view class="mannequin-stage">
         <view class="mannequin-figure">
@@ -29,7 +41,7 @@
       <view class="selected-piece-list">
         <block wx:for="{{selectedPieces}}" wx:key="id">
           <view class="selected-piece-pill">
-            <image class="selected-piece-image" src="{{item.placeholderImage}}" mode="aspectFit"></image>
+            <image class="selected-piece-image" src="{{item.displayImage}}" mode="aspectFit"></image>
             <text>{{item.name}}</text>
           </view>
         </block>
@@ -46,7 +58,7 @@
           <view class="slot-card" wx:if="{{!item.hidden}}" data-slot="{{item.id}}" bindtap="chooseSlot">
             <text class="slot-label">{{item.label}}</text>
             <view class="slot-body">
-              <image class="slot-image" wx:if="{{item.garment}}" src="{{item.garment.placeholderImage}}" mode="aspectFit"></image>
+              <image class="slot-image" wx:if="{{item.garment}}" src="{{item.garment.displayImage}}" mode="aspectFit"></image>
               <view class="slot-copy">
                 <text class="slot-name">{{item.name}}</text>
                 <text class="section-tip">{{item.note}}</text>
@@ -65,7 +77,7 @@
       <view class="candidate-list">
         <block wx:for="{{candidateGarments}}" wx:key="id">
           <view class="candidate-card" data-id="{{item.id}}" bindtap="pickGarment">
-            <image class="candidate-image" src="{{item.placeholderImage}}" mode="aspectFit"></image>
+            <image class="candidate-image" src="{{item.displayImage}}" mode="aspectFit"></image>
             <view class="candidate-copy">
               <text class="candidate-name">{{item.name}}</text>
               <text class="section-tip">{{item.detailLine}}</text>

@@ -274,11 +274,35 @@ function isGarmentLimitReached(state) {
   return state.garments.length >= state.user.privilege.garmentLimit;
 }
 
+async function updateGarment(garmentId, updates) {
+  if (env.useMockApi) {
+    return syncMutationState(await mockBackend.updateGarment(garmentId, updates));
+  }
+
+  return syncMutationState(await authedRequest({
+    path: `/v1/garments/${encodeURIComponent(garmentId)}`,
+    method: 'PUT',
+    data: updates,
+  }));
+}
+
+async function deleteGarment(garmentId) {
+  if (env.useMockApi) {
+    return syncMutationState(await mockBackend.deleteGarment(garmentId));
+  }
+
+  return syncMutationState(await authedRequest({
+    path: `/v1/garments/${encodeURIComponent(garmentId)}`,
+    method: 'DELETE',
+  }));
+}
+
 module.exports = {
   FREE_GARMENT_LIMIT,
   assignRecommendationToDate,
   assignRecommendationToTomorrow,
   createCapturedGarment,
+  deleteGarment,
   getActiveRecommendation,
   getAvailableRecommendations,
   getGarmentMap,
@@ -294,4 +318,5 @@ module.exports = {
   resetState,
   rotateRecommendation,
   saveOutfitBoard,
+  updateGarment,
 };
