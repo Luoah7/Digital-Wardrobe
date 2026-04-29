@@ -46,7 +46,7 @@
 
 用微信开发者工具导入 `Digital Wardrobe` 目录即可。
 
-默认使用 [project.config.json](project.config.json) 里的 `appid`。如果要切到你自己的小程序环境，直接替换这里的 `appid` 即可。
+仓库里的 [project.config.json](project.config.json) 只保留公开可提交的 `touristappid`。真实 `appid` 请放到本地的 `project.private.config.json`，或者直接在微信开发者工具的项目详情里修改。这个私有文件已经在 `.gitignore` 里，不会进仓库。
 
 ### 前端运行模式
 
@@ -80,7 +80,7 @@ cd server
 cp .env.example .env.local
 ```
 
-把 `.env.local` 里的 `WECHAT_MINI_APP_ID` 和 `WECHAT_MINI_APP_SECRET` 换成你自己的值。如果要启用真实天气，再补上 `WEATHER_API_KEY`。启动脚本会自动读取 `.env.local`。
+把 `.env.local` 里的 `WECHAT_MINI_APP_ID` 和 `WECHAT_MINI_APP_SECRET` 换成你自己的值。如果前端项目本地也要用真实小程序环境，再把 `appid` 写到 `project.private.config.json`。如果要启用真实天气，再补上 `WEATHER_API_KEY`。启动脚本会自动读取 `.env.local`。
 
 启动命令：
 

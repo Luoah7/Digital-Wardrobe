@@ -1,15 +1,19 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
-function readAppIdFromProjectConfig() {
+function readAppIdFromConfig(filename) {
   try {
-    const configPath = path.join(__dirname, '..', '..', 'project.config.json');
+    const configPath = path.join(__dirname, '..', '..', filename);
     const content = fs.readFileSync(configPath, 'utf8');
     const config = JSON.parse(content);
     return config.appid || '';
   } catch (error) {
     return '';
   }
+}
+
+function readAppIdFromLocalConfig() {
+  return readAppIdFromConfig('project.private.config.json') || readAppIdFromConfig('project.config.json');
 }
 
 function loadLocalEnvFile() {
@@ -41,7 +45,7 @@ function loadLocalEnvFile() {
 function createWechatAuthClient(options = {}) {
   loadLocalEnvFile();
 
-  const appId = options.wechatAppId || process.env.WECHAT_MINI_APP_ID || readAppIdFromProjectConfig();
+  const appId = options.wechatAppId || process.env.WECHAT_MINI_APP_ID || readAppIdFromLocalConfig();
   const appSecret = options.wechatAppSecret || process.env.WECHAT_MINI_APP_SECRET || process.env.WECHAT_APP_SECRET || '';
 
   return {
