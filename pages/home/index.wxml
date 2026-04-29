@@ -13,6 +13,11 @@
           </view>
         </view>
       </view>
+      <button class="page-icon-button top-weather-button" bindtap="openRecommendation">
+        <image class="icon-md" src="{{icons.cloudRain}}" mode="aspectFit"></image>
+      </button>
+    </view>
+
     <!-- Loading state -->
     <view class="card" wx:if="{{loading}}">
       <text class="section-tip">加载中...</text>
@@ -26,10 +31,6 @@
     </view>
 
     <block wx:else>
-      <button class="page-icon-button top-weather-button" bindtap="openRecommendation">
-        <image class="icon-md" src="{{icons.cloudRain}}" mode="aspectFit"></image>
-      </button>
-    </view>
 
     <view class="card hero-card">
       <view class="hero-copy">
